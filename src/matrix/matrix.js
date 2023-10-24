@@ -174,6 +174,20 @@ const Matrix = class {
     return res;
   }
 
+  tranpose() {
+    const res = new Matrix(this.cols, this.rows);
+
+    for (let i = 0; i < this.cols; i++) {
+      for (let j = 0; j < this.rows; j++) {
+
+        res.set(i, j, this.#matrix[j][i]);
+
+      }
+    }
+
+    return res;
+  }
+
   get(row, col) {
     if (!Number.isInteger(col) || !Number.isInteger(row)) {
       throw 'The indices must be positive integers!';
