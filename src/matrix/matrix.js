@@ -132,6 +132,26 @@ const Matrix = class {
     return [res, swaps];
   }
 
+  determinant() {
+    if (this.rows !== this.cols) {
+      throw 'It\'s impossible to calculate ' +
+            'the determinant of a non-square matrix!';
+    }
+
+    if (this.rows === 0 && this.cols === 0) {
+      throw 'It\'s impossible to find the determinant of an empty matrix!';
+    }
+
+    const [upperTriangle, swaps] = this.toUpperTriangle();
+
+    let res = upperTriangle.get(0, 0);
+    for (let i = 1; (i < this.rows && res !== 0); i++) {
+      res *= upperTriangle.get(i, i);
+    }
+
+    return swaps % 2 === 0 ? res : -res;
+  }
+
   get(row, col) {
     if (!Number.isInteger(col) || !Number.isInteger(row)) {
       throw 'The indices must be positive integers!';
