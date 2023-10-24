@@ -87,6 +87,51 @@ const Matrix = class {
     return res;
   }
 
+  // Gauss-Jordan method
+  toUpperTriangle() {
+    const res = new Matrix(this.#matrix);
+
+    let swaps = 0;
+    for (let i = 0; (i < res.rows - 1) && (i < res.cols); i++) {
+
+      // The first column of the matrix from the left
+      // that contains at least one non-zero value.
+
+      const nonZeroCol = res.#getNonZeroColIndex(i);
+      if (nonZeroCol === -1) break;
+
+      // If the topmost number in this column is zero,
+      // then change the entire first row of the matrix from another
+      // a row of the matrix where there is no zero in this column.
+
+      if (res.#matrix[i][nonZeroCol] === 0) {
+        const nonZeroRow = res.#getNonZeroColInRowIndex(nonZeroCol, i);
+        if (nonZeroRow === -1) continue;
+
+        res.#swapRows(i, nonZeroRow);
+        swaps++;
+      }
+
+      // The first line is subtracted from the remaining lines,
+      // divided by the top element of the selected column and
+      // multiplied by the first element of the corresponding string,
+      // with the goal of getting the first element of each line
+      // (except the first) to be zero.
+
+      const divider = res.#matrix[i][nonZeroCol] || 1;
+      for (let j = i + 1; (j < res.rows) && (j < res.cols); j++) {
+
+        const firstElement = res.#matrix[j][i];
+        for (let k = i; k < res.cols; k++) {
+          res.#matrix[j][k] -= res.#matrix[i][k] / divider * firstElement;
+        }
+      }
+
+    }
+
+    return [res, swaps];
+  }
+
   map(fn, thisArg) {
 
     const mapFn = fn.bind(thisArg);
@@ -128,6 +173,32 @@ const Matrix = class {
     return (this.rows === matrix.rows) && (this.cols === matrix.cols);
   }
 
+  #getNonZeroColIndex(k) {
+
+    for (let i = k; i < this.cols; i++) {
+
+      for (let j = k; j < this.rows; j++) {
+        if (this.#matrix[j][i] !== 0) return i;
+      }
+    }
+
+    return -1;
+  }
+
+  #getNonZeroColInRowIndex(colIndex, k) {
+
+    for (let i = k; i < this.rows; i++) {
+      if (this.#matrix[i][colIndex] !== 0) return i;
+    }
+
+    return -1;
+  }
+
+  #swapRows(row1, row2) {
+    const temp = this.#matrix[row1];
+    this.#matrix[row1] = this.#matrix[row2];
+    this.#matrix[row2] = temp;
+  }
 };
 
 module.exports = Matrix;
