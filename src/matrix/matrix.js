@@ -132,6 +132,42 @@ const Matrix = class {
     return [res, swaps];
   }
 
+  get(row, col) {
+    if (!Number.isInteger(col) || !Number.isInteger(row)) {
+      throw 'The indices must be positive integers!';
+    }
+
+    if (row >= this.rows || row < 0) {
+      throw `Invalid row index: ${row}!`;
+    }
+
+    if (col >= this.cols || col < 0) {
+      throw `Invalid col index: ${col}!`;
+    }
+
+    return this.#matrix[row][col];
+  }
+
+  set(row, col, value) {
+    if (!Number.isInteger(col) || !Number.isInteger(row)) {
+      throw 'The indices must be positive integers!';
+    }
+
+    if (typeof value !== 'number') {
+      throw 'All elements of the matrix must be numbers!';
+    }
+
+    if (row >= this.rows || row < 0) {
+      throw `Invalid row index: ${row}!`;
+    }
+
+    if (col >= this.cols || col < 0) {
+      throw `Invalid col index: ${col}!`;
+    }
+
+    this.#matrix[row][col] = value;
+  }
+
   map(fn, thisArg) {
 
     const mapFn = fn.bind(thisArg);
