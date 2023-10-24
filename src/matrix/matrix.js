@@ -152,6 +152,28 @@ const Matrix = class {
     return swaps % 2 === 0 ? res : -res;
   }
 
+  rank() {
+    const [upperTriangle] = this.toUpperTriangle();
+
+    const min = Math.min(this.rows, this.cols);
+
+    let res = min;
+    for (let i = 0; (i < min && res > 0); i++) {
+
+      let allZeros = true;
+      for (let j = 0; j < min; j++) {
+        if (upperTriangle.get(i, j) !== 0) {
+          allZeros = false;
+          break;
+        }
+      }
+
+      res -= allZeros;
+    }
+
+    return res;
+  }
+
   get(row, col) {
     if (!Number.isInteger(col) || !Number.isInteger(row)) {
       throw 'The indices must be positive integers!';
