@@ -189,15 +189,11 @@ const Matrix = class {
   }
 
   get(row, col) {
-    if (!Number.isInteger(col) || !Number.isInteger(row)) {
-      throw 'The indices must be positive integers!';
-    }
-
-    if (row >= this.rows || row < 0) {
+    if (!this.#isValidRowIndex(row)) {
       throw `Invalid row index: ${row}!`;
     }
 
-    if (col >= this.cols || col < 0) {
+    if (!this.#isValidColIndex(col)) {
       throw `Invalid col index: ${col}!`;
     }
 
@@ -205,19 +201,15 @@ const Matrix = class {
   }
 
   set(row, col, value) {
-    if (!Number.isInteger(col) || !Number.isInteger(row)) {
-      throw 'The indices must be positive integers!';
-    }
-
     if (typeof value !== 'number') {
       throw 'All elements of the matrix must be numbers!';
     }
 
-    if (row >= this.rows || row < 0) {
+    if (!this.#isValidRowIndex(row)) {
       throw `Invalid row index: ${row}!`;
     }
 
-    if (col >= this.cols || col < 0) {
+    if (!this.#isValidColIndex(col)) {
       throw `Invalid col index: ${col}!`;
     }
 
@@ -265,6 +257,14 @@ const Matrix = class {
 
   #isValidForSum(matrix) {
     return (this.rows === matrix.rows) && (this.cols === matrix.cols);
+  }
+
+  #isValidRowIndex(row) {
+    return Number.isInteger(row) && (row < this.rows && row >= 0);
+  }
+
+  #isValidColIndex(col) {
+    return Number.isInteger(col) && (col < this.cols && col >= 0);
   }
 
   #getNonZeroColIndex(k) {
