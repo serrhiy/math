@@ -188,6 +188,10 @@ const Matrix = class {
     return res;
   }
 
+  minor(row, col) {
+    return this.#crossOut(row, col).determinant();
+  }
+
   get(row, col) {
     if (!this.#isValidRowIndex(row)) {
       throw `Invalid row index: ${row}!`;
