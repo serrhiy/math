@@ -1,13 +1,14 @@
 'use strict';
 
 
-const Matrix = class {
+class Matrix {
 
   #matrix = [];
 
   static identity(n) {
     if (!Number.isInteger(n) || n < 0) {
-      throw 'The dimension of the matrix must be a non-negative integer!';
+      throw new Error('The dimension of the matrix ' +
+                      'must be a non-negative integer!');
     }
 
     const res = new Array(n).fill([]);
@@ -25,45 +26,41 @@ const Matrix = class {
       return;
     }
 
-    if (Number.isInteger(a) && Number.isInteger(b)) {
-
-      if (a < 0 || b < 0) {
-        throw 'The indices must be positive integers!';
-      }
-
-      if ((a === 0 && b !== 0) || (b === 0 && a !== 0)) {
-        throw `Invalid arguments: ${a} and ${b}`;
-      }
-
-      this.#matrix = new Array(a).fill([]);
-
-      for (let i = 0; i < a; i++) {
-        this.#matrix[i] = new Array(b).fill(0);
-      }
-
-      return;
+    if (!Number.isInteger(a) || !Number.isInteger(b)) {
+      throw new Error('Unsupported types for constructor: ' +
+                      `${typeof a} and ${typeof b}`);
     }
 
-    throw `Unsupported types for constructor: ${typeof a} and ${typeof b}`;
+    if (a < 0 || b < 0) {
+      throw new Error('The indices must be positive integers!');
+    }
+    if ((a === 0 && b !== 0) || (b === 0 && a !== 0)) {
+      throw new Error(`Invalid arguments: ${a} and ${b}`);
+    }
+
+    this.#matrix = new Array(a).fill([]);
+    for (let i = 0; i < a; i++) {
+      this.#matrix[i] = new Array(b).fill(0);
+    }
   }
 
   add(mat) {
-    const matrix = (mat instanceof Matrix) ? mat : new Matrix(mat);
+    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
 
     if (!this.#isValidForSum(matrix)) {
-      throw 'Invalid matrix for sum! ' +
-            'The dimensions of the matrices are not identical!';
+      throw new Error('Invalid matrix for sum! ' +
+            'The dimensions of the matrices are not identical!');
     }
 
     return this.map((_, [i, j]) => this.#matrix[i][j] + matrix.#matrix[i][j]);
   }
 
   subtract(mat) {
-    const matrix = (mat instanceof Matrix) ? mat : new Matrix(mat);
+    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
 
     if (!this.#isValidForSum(matrix)) {
-      throw 'Invalid matrix for subtract! ' +
-            'The dimensions of the matrices are not identical!';
+      throw new Error('Invalid matrix for subtract! ' +
+            'The dimensions of the matrices are not identical!');
     }
 
     return this.map((_, [i, j]) => this.#matrix[i][j] - matrix.#matrix[i][j]);
@@ -71,17 +68,17 @@ const Matrix = class {
 
   mulOnNumber(x) {
     if (typeof x !== 'number') {
-      throw 'Invalid argument! Argument type must be a number!';
+      throw new Error('Invalid argument! Argument type must be a number!');
     }
 
     return this.map((n) => n * x);
   }
 
   mul(mat) {
-    const matrix = (mat instanceof Matrix) ? mat : new Matrix(mat);
+    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
 
     if (this.cols !== matrix.rows) {
-      throw 'Invalid matrix for multiplying!';
+      throw new Error('Invalid matrix for multiplying!');
     }
 
     const res = new Matrix(this.rows, matrix.cols);
@@ -103,11 +100,11 @@ const Matrix = class {
 
   pow(n) {
     if (this.cols !== this.rows) {
-      throw 'It\'s impossible to exponentiate a non-square matrix!';
+      throw new Error('It\'s impossible to exponentiate a non-square matrix!');
     }
 
     if (!Number.isInteger(n)) {
-      throw 'The degree of the matrix must be an integer!';
+      throw new Error('The degree of the matrix must be an integer!');
     }
 
     if (n === 0) {
@@ -173,12 +170,13 @@ const Matrix = class {
 
   determinant() {
     if (this.rows !== this.cols) {
-      throw 'It\'s impossible to calculate ' +
-            'the determinant of a non-square matrix!';
+      throw new Error('It\'s impossible to calculate ' +
+            'the determinant of a non-square matrix!');
     }
 
     if (this.rows === 0 && this.cols === 0) {
-      throw 'It\'s impossible to find the determinant of an empty matrix!';
+      throw new Error('It\'s impossible to find the ' +
+                      'determinant of an empty matrix!');
     }
 
     const [upperTriangle, swaps] = this.toUpperTriangle();
@@ -235,8 +233,8 @@ const Matrix = class {
     const determinant = this.determinant();
 
     if (determinant === 0) {
-      throw 'It is impossible to find the inverse ' +
-            'of a matrix if its determinant is 0';
+      throw new Error('It is impossible to find the inverse ' +
+                      'of a matrix if its determinant is 0');
     }
 
     const res = new Array(this.cols).fill([]);
@@ -258,11 +256,11 @@ const Matrix = class {
 
   get(row, col) {
     if (!this.#isValidRowIndex(row)) {
-      throw `Invalid row index: ${row}!`;
+      throw new Error(`Invalid row index: ${row}!`);
     }
 
     if (!this.#isValidColIndex(col)) {
-      throw `Invalid col index: ${col}!`;
+      throw new Error(`Invalid col index: ${col}!`);
     }
 
     return this.#matrix[row][col];
@@ -270,15 +268,15 @@ const Matrix = class {
 
   set(row, col, value) {
     if (typeof value !== 'number') {
-      throw 'All elements of the matrix must be numbers!';
+      throw new Error('All elements of the matrix must be numbers!');
     }
 
     if (!this.#isValidRowIndex(row)) {
-      throw `Invalid row index: ${row}!`;
+      throw new Error(`Invalid row index: ${row}!`);
     }
 
     if (!this.#isValidColIndex(col)) {
-      throw `Invalid col index: ${col}!`;
+      throw new Error(`Invalid col index: ${col}!`);
     }
 
     this.#matrix[row][col] = value;
@@ -308,11 +306,11 @@ const Matrix = class {
 
   #crossOut(row, col) {
     if (!this.#isValidRowIndex(row)) {
-      throw `Invalid row index: ${row}!`;
+      throw new Error(`Invalid row index: ${row}!`);
     }
 
     if (!this.#isValidColIndex(col)) {
-      throw `Invalid col index: ${row}!`;
+      throw new Error(`Invalid col index: ${row}!`);
     }
 
     const res = [];
@@ -360,7 +358,6 @@ const Matrix = class {
   }
 
   #getNonZeroColIndex(k) {
-
     for (let i = k; i < this.cols; i++) {
 
       for (let j = k; j < this.rows; j++) {
@@ -372,7 +369,6 @@ const Matrix = class {
   }
 
   #getNonZeroColInRowIndex(colIndex, k) {
-
     for (let i = k; i < this.rows; i++) {
       if (this.#matrix[i][colIndex] !== 0) return i;
     }
@@ -385,7 +381,7 @@ const Matrix = class {
     this.#matrix[row1] = this.#matrix[row2];
     this.#matrix[row2] = temp;
   }
-};
+}
 
 module.exports = Matrix;
 
