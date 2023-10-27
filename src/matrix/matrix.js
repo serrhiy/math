@@ -238,6 +238,30 @@ const Matrix = class {
     return this.#matrix[0]?.length ?? 0;
   }
 
+  #crossOut(row, col) {
+    if (!this.#isValidRowIndex(row)) {
+      throw `Invalid row index: ${row}!`;
+    }
+
+    if (!this.#isValidColIndex(col)) {
+      throw `Invalid col index: ${row}!`;
+    }
+
+    const res = [];
+    for (let i = 0; i < this.rows; i++) {
+      if (i === row) continue;
+
+      res.push([]);
+      for (let j = 0; j < this.cols; j++) {
+        if (j === col) continue;
+        res.at(-1).push(this.#matrix[i][j]);
+      }
+
+    }
+
+    return new Matrix(res);
+  }
+
   #isMatrix(matrix) {
     if (!Array.isArray(matrix)) return false;
 
