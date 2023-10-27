@@ -5,6 +5,20 @@ const Matrix = class {
 
   #matrix = [];
 
+  static identity(n) {
+    if (!Number.isInteger(n) || n < 0) {
+      throw 'The dimension of the matrix must be a non-negative integer!';
+    }
+
+    const res = new Array(n).fill([]);
+    for (let i = 0; i < n; i++) {
+      res[i] = new Array(n).fill(0);
+      res[i][i] = 1;
+    }
+
+    return new Matrix(res);
+  }
+
   constructor(a, b) {
     if (this.#isMatrix(a) && typeof n === 'undefined') {
       this.#matrix = structuredClone(a);
