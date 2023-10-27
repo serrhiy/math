@@ -101,6 +101,31 @@ const Matrix = class {
     return res;
   }
 
+  pow(n) {
+    if (this.cols !== this.rows) {
+      throw 'It\'s impossible to exponentiate a non-square matrix!';
+    }
+
+    if (!Number.isInteger(n)) {
+      throw 'The degree of the matrix must be an integer!';
+    }
+
+    if (n === 0) {
+      return Matrix.identity(this.rows);
+    }
+
+    let res = new Matrix(this.#matrix);
+
+    let cntOfMuls = Math.abs(n);
+
+    while (cntOfMuls > 1) {
+      res = res.mul(this);
+      cntOfMuls--;
+    }
+
+    return n > 0 ? res : res.inverse();
+  }
+
   // Gauss-Jordan method
   toUpperTriangle() {
     const res = new Matrix(this.#matrix);
