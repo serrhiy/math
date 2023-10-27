@@ -192,6 +192,31 @@ const Matrix = class {
     return this.#crossOut(row, col).determinant();
   }
 
+  inverse() {
+    const determinant = this.determinant();
+
+    if (determinant === 0) {
+      throw 'It is impossible to find the inverse ' +
+            'of a matrix if its determinant is 0';
+    }
+
+    const res = new Array(this.cols).fill([]);
+    for (let i = 0; i < this.cols; i++) {
+
+      res[i] = new Array(this.rows).fill(0);
+      for (let j = 0; j < this.rows; j++) {
+
+        const matrixMinor = this.minor(j, i);
+
+        const sign = (i + j) % 2 === 0 ? 1 : -1;
+
+        res[i][j] = sign / determinant * matrixMinor;
+      }
+    }
+
+    return new Matrix(res);
+  }
+
   get(row, col) {
     if (!this.#isValidRowIndex(row)) {
       throw `Invalid row index: ${row}!`;
