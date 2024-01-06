@@ -254,6 +254,10 @@ class Matrix {
     return new Matrix(res);
   }
 
+  toArray() {
+    return structuredClone(this.#matrix);
+  }
+
   get(row, col) {
     if (!this.#isValidRowIndex(row)) {
       throw new Error(`Invalid row index: ${row}!`);
