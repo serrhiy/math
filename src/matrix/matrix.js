@@ -335,8 +335,6 @@ class Matrix {
     for (const row of matrix) {
       if (!Array.isArray(row)) return false;
 
-      if (row.length === 0) return false;
-
       if (row.some((x) => typeof x !== 'number')) return false;
 
       if (row.length !== countOfCols) return false;
