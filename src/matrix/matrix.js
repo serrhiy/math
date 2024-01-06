@@ -21,7 +21,7 @@ class Matrix {
   }
 
   constructor(a, b) {
-    if (this.#isMatrix(a) && typeof n === 'undefined') {
+    if (this.#isMatrix(a) && typeof b === 'undefined') {
       this.#matrix = structuredClone(a);
       return;
     }
