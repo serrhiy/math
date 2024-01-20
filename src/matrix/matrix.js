@@ -24,13 +24,11 @@ class Matrix {
       this.#matrix = structuredClone(a);
       return;
     }
-
     if (!Number.isInteger(a) || !Number.isInteger(b)) {
       throw new Error(
         `Unsupported types for constructor: ${typeof a} and ${typeof b}`,
       );
     }
-
     if (a < 0 || b < 0) {
       throw new Error('The indices must be positive integers!');
     }
@@ -74,7 +72,6 @@ class Matrix {
     if (typeof x !== 'number') {
       throw new Error('Invalid argument! Argument type must be a number!');
     }
-
     return this.map((n) => n * x);
   }
 
@@ -86,14 +83,12 @@ class Matrix {
     }
 
     const res = new Matrix(this.rows, matrix.cols);
-
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < matrix.cols; j++) {
         let sum = 0;
         for (let k = 0; k < this.cols; k++) {
           sum += this.#matrix[i][k] * matrix.#matrix[k][j];
         }
-
         res.#matrix[i][j] = sum;
       }
     }
@@ -105,19 +100,15 @@ class Matrix {
     if (this.cols !== this.rows) {
       throw new Error("It's impossible to exponentiate a non-square matrix!");
     }
-
     if (!Number.isInteger(n)) {
       throw new Error('The degree of the matrix must be an integer!');
     }
-
     if (n === 0) {
       return Matrix.identity(this.rows);
     }
 
     let res = new Matrix(this.#matrix);
-
     let cntOfMuls = Math.abs(n);
-
     while (cntOfMuls > 1) {
       res = res.mul(this);
       cntOfMuls--;
@@ -145,7 +136,6 @@ class Matrix {
       if (res.#matrix[i][nonZeroCol] === 0) {
         const nonZeroRow = res.#getNonZeroColInRowIndex(nonZeroCol, i);
         if (nonZeroRow === -1) continue;
-
         res.#swapRows(i, nonZeroRow);
         swaps++;
       }
@@ -175,7 +165,6 @@ class Matrix {
           'the determinant of a non-square matrix!',
       );
     }
-
     if (this.rows === 0 && this.cols === 0) {
       throw new Error(
         "It's impossible to find the determinant of an empty matrix!",
@@ -183,7 +172,6 @@ class Matrix {
     }
 
     const [upperTriangle, swaps] = this.toUpperTriangle();
-
     let res = upperTriangle.get(0, 0);
     for (let i = 1; i < this.rows && res !== 0; i++) {
       res *= upperTriangle.get(i, i);
@@ -196,7 +184,6 @@ class Matrix {
     const [upperTriangle] = this.toUpperTriangle();
 
     const min = Math.min(this.rows, this.cols);
-
     let res = min;
     for (let i = 0; i < min && res > 0; i++) {
       let allZeros = true;
@@ -206,7 +193,6 @@ class Matrix {
           break;
         }
       }
-
       res -= allZeros;
     }
 
@@ -221,7 +207,6 @@ class Matrix {
         res.set(i, j, this.#matrix[j][i]);
       }
     }
-
     return res;
   }
 
@@ -244,9 +229,7 @@ class Matrix {
       res[i] = new Array(this.rows).fill(0);
       for (let j = 0; j < this.rows; j++) {
         const matrixMinor = this.minor(j, i);
-
         const sign = (i + j) % 2 === 0 ? 1 : -1;
-
         res[i][j] = (sign / determinant) * matrixMinor;
       }
     }
@@ -262,11 +245,9 @@ class Matrix {
     if (!this.#isValidRowIndex(row)) {
       throw new Error(`Invalid row index: ${row}!`);
     }
-
     if (!this.#isValidColIndex(col)) {
       throw new Error(`Invalid col index: ${col}!`);
     }
-
     return this.#matrix[row][col];
   }
 
@@ -278,17 +259,14 @@ class Matrix {
     if (!this.#isValidRowIndex(row)) {
       throw new Error(`Invalid row index: ${row}!`);
     }
-
     if (!this.#isValidColIndex(col)) {
       throw new Error(`Invalid col index: ${col}!`);
     }
-
     this.#matrix[row][col] = value;
   }
 
   map(fn, thisArg) {
     const mapFn = fn.bind(thisArg);
-
     const res = new Matrix(this.rows, this.cols);
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
@@ -311,7 +289,6 @@ class Matrix {
     if (!this.#isValidRowIndex(row)) {
       throw new Error(`Invalid row index: ${row}!`);
     }
-
     if (!this.#isValidColIndex(col)) {
       throw new Error(`Invalid col index: ${row}!`);
     }
