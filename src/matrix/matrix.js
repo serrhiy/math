@@ -105,6 +105,16 @@ class Matrix {
     return res;
   }
 
+  boolean_projecion() {
+    const res = new Matrix(this.rows, this.cols);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        res.#matrix[i][j] = +!!this.#matrix[i][j];
+      }
+    }
+    return res;
+  }
+
   pow(n) {
     if (this.cols !== this.rows) {
       throw new Error("It's impossible to exponentiate a non-square matrix!");
