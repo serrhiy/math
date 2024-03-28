@@ -290,6 +290,19 @@ class Matrix {
     return this.#matrix[0]?.length ?? 0;
   }
 
+  [Symbol.iterator]() {
+    return {
+      i: 0,
+      matrix: this.#matrix,
+      next() {
+        return {
+          done: this.i >= this.matrix.length,
+          value: this.matrix[this.i++],
+        };
+      },
+    };
+  }
+
   #crossOut(row, col) {
     if (!this.#isValidRowIndex(row)) {
       throw new Error(`Invalid row index: ${row}!`);
