@@ -86,6 +86,25 @@ class Matrix {
     return res;
   }
 
+  compose(mat) {
+    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
+    if (this.cols !== matrix.rows) {
+      throw new Error('Invalid matrix for composition!');
+    }
+    const res = new Matrix(this.rows, matrix.cols);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < matrix.cols; j++) {
+        for (let k = 0; k < this.cols; k++) {
+          if (this.#matrix[i][k] && matrix.#matrix[k][j]) {
+            res.#matrix[i][j] = 1;
+            break;
+          }
+        }
+      }
+    }
+    return res;
+  }
+
   pow(n) {
     if (this.cols !== this.rows) {
       throw new Error("It's impossible to exponentiate a non-square matrix!");
