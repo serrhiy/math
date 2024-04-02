@@ -6,6 +6,17 @@ class Matrix {
   #cols = 0;
   #matrix = null;
 
+  static identity(size, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
+    if (!Number.isInteger(size) || size < 0) {
+      throw new Error('Matrix size must be a non-negative integer');
+    }
+    const typed = new Constructor(size * size);
+    for (let i = 0; i < size; i++) {
+      typed[i * (size + 1)] = 1;
+    }
+    return new Matrix(typed, size, size);
+  }
+
   static fromArray(
     array,
     rows,
