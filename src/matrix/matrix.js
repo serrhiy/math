@@ -78,6 +78,10 @@ class Matrix {
     const index = row * this.#cols + col;
     this.#matrix[index] = value;
   }
+
+  validForSum(matrix) {
+    return matrix.#rows === this.#rows && matrix.#cols === this.#cols;
+  }
 }
 
 module.exports = Matrix;
