@@ -57,6 +57,16 @@ class Matrix {
     this.#rows = rows;
     this.#cols = cols;
   }
+
+  get(row, col) {
+    const index = row * this.#cols + col;
+    return this.#matrix[index];
+  }
+
+  set(row, col, value) {
+    const index = row * this.#cols + col;
+    this.#matrix[index] = value;
+  }
 }
 
 module.exports = Matrix;
