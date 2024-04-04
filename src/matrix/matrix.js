@@ -114,12 +114,29 @@ class Matrix {
     const otherMatrix = matrix.#matrix;
     return this.map((n, i) => thisMatrix[i] - otherMatrix[i], destination);
   }
-  
+
   mulOnNumber(x, destination) {
     if (typeof x !== 'number') {
       throw new Error('Invalid argument! Argument type must be a number!');
     }
     return this.map((n) => n * x, destination);
+  }
+
+  mul(matrix, destination) {
+    if (this.cols !== matrix.rows) {
+      throw new Error('Invalid matrix for multiplying!');
+    }
+    const { rows, cols } = destination;
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        let sum = 0;
+        for (let k = 0; k < cols; k++) {
+          sum += this.get(i, k) * matrix.get(k, j);
+        }
+        destination.set(i, j, sum);
+      }
+    }
+    return destination;
   }
 
   map(fn, destination, thisArg = null) {
