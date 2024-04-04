@@ -79,6 +79,14 @@ class Matrix {
     this.#matrix[index] = value;
   }
 
+  get rows() {
+    return this.#rows;
+  }
+
+  get cols() {
+    return this.#cols;
+  }
+
   sum(matrix, destination) {
     if (!this.validForSum(matrix) || !this.validForSum(destination)) {
       throw new Error(
