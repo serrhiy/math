@@ -96,15 +96,9 @@ class Matrix {
           'The dimensions of the matrices are not identical!',
       );
     }
-    const rows = this.#rows;
-    const cols = this.#cols;
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
-    const destMatrix = destination.#matrix;
-    for (let i = 0; i < rows * cols; i++) {
-      destMatrix[i] = thisMatrix[i] + otherMatrix[i];
-    }
-    return destination;
+    return this.map((n, i) => thisMatrix[i] + otherMatrix[i], destination);
   }
 
   subtract(matrix, destination) {
@@ -116,15 +110,9 @@ class Matrix {
           'The dimensions of the matrices are not identical!',
       );
     }
-    const rows = this.#rows;
-    const cols = this.#cols;
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
-    const destMatrix = destination.#matrix;
-    for (let i = 0; i < rows * cols; i++) {
-      destMatrix[i] = thisMatrix[i] - otherMatrix[i];
-    }
-    return destination;
+    return this.map((n, i) => thisMatrix[i] - otherMatrix[i], destination);
   }
 
   map(fn, destination, thisArg = null) {
