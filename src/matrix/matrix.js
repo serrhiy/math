@@ -136,6 +136,24 @@ class Matrix {
     return destination;
   }
 
+  compose(matrix, destination) {
+    if (this.cols !== matrix.rows) {
+      throw new Error('Invalid matrix for multiplying!');
+    }
+    const { rows, cols } = destination;
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        for (let k = 0; k < cols; k++) {
+          if (this.get(i, k) && matrix.get(k, j)) {
+            destination.set(i, j, 1);
+            break;
+          }
+        }
+      }
+    }
+    return destination;
+  }
+
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
