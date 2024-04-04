@@ -154,6 +154,15 @@ class Matrix {
     return destination;
   }
 
+  booleanProjecion(destination) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        destination.set(i, j, +!!this.get(i, j));
+      }
+    }
+    return destination;
+  }
+
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
