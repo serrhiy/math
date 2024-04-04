@@ -88,7 +88,9 @@ class Matrix {
   }
 
   sum(matrix, destination) {
-    if (!this.validForSum(matrix) || !this.validForSum(destination)) {
+    const matrixValid = Matrix.validForSum(this, matrix);
+    const destValid = Matrix.validForSum(this, destination);
+    if (!matrixValid || !destValid) {
       throw new Error(
         'Invalid matrix for sum! ' +
           'The dimensions of the matrices are not identical!',
@@ -105,8 +107,8 @@ class Matrix {
     return destination;
   }
 
-  validForSum(matrix) {
-    return matrix.#rows === this.#rows && matrix.#cols === this.#cols;
+  static validForSum(matrix1, matrix2) {
+    return matrix1.rows === matrix2.rows && matrix1.cols === matrix2.cols;
   }
 }
 
