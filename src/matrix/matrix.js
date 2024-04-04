@@ -127,6 +127,17 @@ class Matrix {
     return destination;
   }
 
+  map(fn, destination, thisArg = null) {
+    const mapFn = fn.bind(thisArg);
+    const length = destination.#rows * destination.#cols;
+    const matrix = this.#matrix;
+    const destMatrix = destination.#matrix;
+    for (let i = 0; i < length; i++) {
+      destMatrix[i] = mapFn(matrix[i], i, this);
+    }
+    return destination;
+  }
+
   static validForSum(matrix1, matrix2) {
     return matrix1.rows === matrix2.rows && matrix1.cols === matrix2.cols;
   }
