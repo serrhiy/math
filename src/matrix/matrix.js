@@ -114,6 +114,13 @@ class Matrix {
     const otherMatrix = matrix.#matrix;
     return this.map((n, i) => thisMatrix[i] - otherMatrix[i], destination);
   }
+  
+  mulOnNumber(x, destination) {
+    if (typeof x !== 'number') {
+      throw new Error('Invalid argument! Argument type must be a number!');
+    }
+    return this.map((n) => n * x, destination);
+  }
 
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
