@@ -79,6 +79,24 @@ class Matrix {
     this.#matrix[index] = value;
   }
 
+  sum(matrix, destination) {
+    if (!this.validForSum(matrix) || !this.validForSum(destination)) {
+      throw new Error(
+        'Invalid matrix for sum! ' +
+          'The dimensions of the matrices are not identical!',
+      );
+    }
+    const rows = this.#rows;
+    const cols = this.#cols;
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    const destMatrix = destination.#matrix;
+    for (let i = 0; i < rows * cols; i++) {
+      destMatrix[i] = thisMatrix[i] + otherMatrix[i];
+    }
+    return destination;
+  }
+
   validForSum(matrix) {
     return matrix.#rows === this.#rows && matrix.#cols === this.#cols;
   }
