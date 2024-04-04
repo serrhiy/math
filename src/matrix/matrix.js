@@ -107,6 +107,26 @@ class Matrix {
     return destination;
   }
 
+  subtract(matrix, destination) {
+    const matrixValid = Matrix.validForSum(this, matrix);
+    const destValid = Matrix.validForSum(this, destination);
+    if (!matrixValid || !destValid) {
+      throw new Error(
+        'Invalid matrix for subtract! ' +
+          'The dimensions of the matrices are not identical!',
+      );
+    }
+    const rows = this.#rows;
+    const cols = this.#cols;
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    const destMatrix = destination.#matrix;
+    for (let i = 0; i < rows * cols; i++) {
+      destMatrix[i] = thisMatrix[i] - otherMatrix[i];
+    }
+    return destination;
+  }
+
   static validForSum(matrix1, matrix2) {
     return matrix1.rows === matrix2.rows && matrix1.cols === matrix2.cols;
   }
