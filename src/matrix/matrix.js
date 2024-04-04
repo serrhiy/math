@@ -116,9 +116,6 @@ class Matrix {
   }
 
   mulOnNumber(x, destination) {
-    if (typeof x !== 'number') {
-      throw new Error('Invalid argument! Argument type must be a number!');
-    }
     return this.map((n) => n * x, destination);
   }
 
