@@ -179,12 +179,37 @@ class Matrix {
   }
 
   #getNonZeroColIndex(start) {
-    for (let i = start; i < this.#cols; i++) {
-      for (let j = start; j < this.#rows; j++) {
-        if (this.get(j, i) !== 0) return i;
+    const matrix = this.#matrix;
+    const rows = this.#rows;
+    const cols = this.#cols;
+    for (let i = start; i < cols; i++) {
+      for (let j = start, k = i; j < rows; j++, k += cols) {
+        if (matrix[k] !== 0) return i;
       }
     }
     return -1;
+  }
+
+  #getNonZeroColInRowIndex(colIndex, start) {
+    const matrix = this.#matrix;
+    const index = colIndex * this.#cols;
+    for (let i = start; i < this.rows; i++) {
+      if (matrix[index + i] !== 0) return i;
+    }
+    return -1;
+  }
+
+  #swapRows(row1Index, row2Index) {
+    const cols = this.#cols;
+    const matrix = this.#matrix;
+    const indexR1 = row1Index * cols;
+    const indexR2 = row2Index * cols;
+    for (let i = 0; i < cols; i++) {
+      const temp = matrix[indexR1 + i];
+      matrix[indexR1 + i] = matrix[indexR2 + i];
+      matrix[indexR2 + i] = temp;
+    }
+    this.s = matrix;
   }
 }
 
