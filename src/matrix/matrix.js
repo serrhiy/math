@@ -177,6 +177,15 @@ class Matrix {
   static validForSum(matrix1, matrix2) {
     return matrix1.rows === matrix2.rows && matrix1.cols === matrix2.cols;
   }
+
+  #getNonZeroColIndex(start) {
+    for (let i = start; i < this.#cols; i++) {
+      for (let j = start; j < this.#rows; j++) {
+        if (this.get(j, i) !== 0) return i;
+      }
+    }
+    return -1;
+  }
 }
 
 module.exports = Matrix;
