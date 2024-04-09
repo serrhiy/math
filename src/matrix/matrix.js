@@ -128,10 +128,9 @@ class Matrix {
     const destMatrix = destination.#matrix;
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
-    let i = 0,
-      c = 0,
+    let c = 0,
       t = 0;
-    while (i < thisRows) {
+    for (let i = 0; i < thisRows; i++) {
       for (let j = 0; j < otherCols; j++) {
         let sum = 0;
         for (let k = 0, r = 0; k < thisCols; k++, r += otherCols) {
@@ -141,7 +140,6 @@ class Matrix {
       }
       c += thisCols;
       t += otherCols;
-      i++;
     }
     return destination;
   }
@@ -155,10 +153,9 @@ class Matrix {
     const destMatrix = destination.#matrix;
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
-    let i = 0,
-      c = 0,
+    let c = 0,
       t = 0;
-    while (i < thisRows) {
+    for (let i = 0; i < thisRows; i++) {
       for (let j = 0; j < otherCols; j++) {
         for (let k = 0, r = 0; k < thisCols; k++, r += otherCols) {
           if (thisMatrix[c + k] && otherMatrix[r + j]) {
@@ -169,7 +166,6 @@ class Matrix {
       }
       c += thisCols;
       t += otherCols;
-      i++;
     }
     return destination;
   }
@@ -184,48 +180,48 @@ class Matrix {
     return destination;
   }
 
-    // Gauss-Jordan method
-    toUpperTriangle() {
-      const { rows, cols } = this;
-      const res = Matrix.fromTypedArray(this.#matrix, rows, cols);
-      const matrix = res.#matrix;
-      let swaps = 0;
-      for (let i = 0, c = 0; i < rows - 1 && i < cols; i++, c += cols) {
-        // The first column of the matrix from the left
-        // that contains at least one non-zero value.
+  // Gauss-Jordan method
+  toUpperTriangle() {
+    const { rows, cols } = this;
+    const res = Matrix.fromTypedArray(this.#matrix, rows, cols);
+    const matrix = res.#matrix;
+    let swaps = 0;
+    for (let i = 0, c = 0; i < rows - 1 && i < cols; i++, c += cols) {
+      // The first column of the matrix from the left
+      // that contains at least one non-zero value.
 
-        const nonZeroCol = res.#getNonZeroColIndex(i);
-        if (nonZeroCol === -1) break;
+      const nonZeroCol = res.#getNonZeroColIndex(i);
+      if (nonZeroCol === -1) break;
 
-        // If the topmost number in this column is zero,
-        // then change the entire first row of the matrix from another
-        // a row of the matrix where there is no zero in this column.
+      // If the topmost number in this column is zero,
+      // then change the entire first row of the matrix from another
+      // a row of the matrix where there is no zero in this column.
 
-        if (matrix[c + nonZeroCol] === 0) {
-          const nonZeroRow = res.#getNonZeroColInRowIndex(nonZeroCol, i);
-          if (nonZeroRow === -1) continue;
-          res.#swapRows(i, nonZeroRow);
-          swaps++;
-        }
-
-        // The first line is subtracted from the remaining lines,
-        // divided by the top element of the selected column and
-        // multiplied by the first element of the corresponding string,
-        // with the goal of getting the first element of each line
-        // (except the first) to be zero.
-
-        const divider = matrix[c + nonZeroCol] || 1;
-        let r = (i + 1) * cols;
-        for (let j = i + 1; j < res.rows && j < res.cols; j++) {
-          const firstElement = matrix[r + i];
-          for (let k = i; k < res.cols; k++) {
-            matrix[r + k] -= matrix[c + k] / divider * firstElement;
-          }
-          r += cols;
-        }
+      if (matrix[c + nonZeroCol] === 0) {
+        const nonZeroRow = res.#getNonZeroColInRowIndex(nonZeroCol, i);
+        if (nonZeroRow === -1) continue;
+        res.#swapRows(i, nonZeroRow);
+        swaps++;
       }
-      return [res, swaps];
+
+      // The first line is subtracted from the remaining lines,
+      // divided by the top element of the selected column and
+      // multiplied by the first element of the corresponding string,
+      // with the goal of getting the first element of each line
+      // (except the first) to be zero.
+
+      const divider = matrix[c + nonZeroCol] || 1;
+      let r = (i + 1) * cols;
+      for (let j = i + 1; j < res.rows && j < res.cols; j++) {
+        const firstElement = matrix[r + i];
+        for (let k = i; k < res.cols; k++) {
+          matrix[r + k] -= (matrix[c + k] / divider) * firstElement;
+        }
+        r += cols;
+      }
     }
+    return [res, swaps];
+  }
 
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
