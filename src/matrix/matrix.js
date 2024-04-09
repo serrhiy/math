@@ -175,10 +175,11 @@ class Matrix {
   }
 
   booleanProjecion(destination) {
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        destination.set(i, j, +!!this.get(i, j));
-      }
+    const length = this.#rows * this.#cols;
+    const thisMatrix = this.#matrix;
+    const destMatrix = destination.#matrix;
+    for (let i = 0; i < length; i++) {
+      destMatrix[i] = +!!thisMatrix[i];
     }
     return destination;
   }
