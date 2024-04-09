@@ -123,15 +123,25 @@ class Matrix {
     if (this.cols !== matrix.rows) {
       throw new Error('Invalid matrix for multiplying!');
     }
-    const { rows, cols } = destination;
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
+    const { cols: thisCols, rows: thisRows } = this;
+    const { cols: otherCols } = matrix;
+    const destMatrix = destination.#matrix;
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    let i = 0,
+      c = 0,
+      t = 0;
+    while (i < thisRows) {
+      for (let j = 0; j < otherCols; j++) {
         let sum = 0;
-        for (let k = 0; k < cols; k++) {
-          sum += this.get(i, k) * matrix.get(k, j);
+        for (let k = 0, r = 0; k < thisCols; k++, r += otherCols) {
+          sum += thisMatrix[c + k] * otherMatrix[r + j];
         }
-        destination.set(i, j, sum);
+        destMatrix[t + j] = sum;
       }
+      c += thisCols;
+      t += otherCols;
+      i++;
     }
     return destination;
   }
@@ -209,7 +219,6 @@ class Matrix {
       matrix[indexR1 + i] = matrix[indexR2 + i];
       matrix[indexR2 + i] = temp;
     }
-    this.s = matrix;
   }
 }
 
