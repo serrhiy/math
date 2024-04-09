@@ -150,16 +150,26 @@ class Matrix {
     if (this.cols !== matrix.rows) {
       throw new Error('Invalid matrix for multiplying!');
     }
-    const { rows, cols } = destination;
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        for (let k = 0; k < cols; k++) {
-          if (this.get(i, k) && matrix.get(k, j)) {
-            destination.set(i, j, 1);
+    const { cols: thisCols, rows: thisRows } = this;
+    const { cols: otherCols } = matrix;
+    const destMatrix = destination.#matrix;
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    let i = 0,
+      c = 0,
+      t = 0;
+    while (i < thisRows) {
+      for (let j = 0; j < otherCols; j++) {
+        for (let k = 0, r = 0; k < thisCols; k++, r += otherCols) {
+          if (thisMatrix[c + k] && otherMatrix[r + j]) {
+            destMatrix[t + j] = 1;
             break;
           }
         }
       }
+      c += thisCols;
+      t += otherCols;
+      i++;
     }
     return destination;
   }
