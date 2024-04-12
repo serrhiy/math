@@ -260,6 +260,18 @@ class Matrix {
     return res;
   }
 
+  tranpose(destination) {
+    const { cols } = this;
+    const otherMatrix = destination.#matrix;
+    const thisMatrix = this.#matrix;
+    for (let i = 0, c = 0; i < this.cols; i++, c += cols) {
+      for (let j = 0, t = 0; j < this.rows; j++, t += cols) {
+        otherMatrix[c + j] = thisMatrix[t + i];
+      }
+    }
+    return destination;
+  }
+
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
