@@ -223,6 +223,26 @@ class Matrix {
     return [res, swaps];
   }
 
+  determinant() {
+    if (this.#rows !== this.#cols) {
+      throw new Error(
+        "It's impossible to calculate " +
+          'the determinant of a non-square matrix!',
+      );
+    }
+    if (this.#rows === 0 && this.#cols === 0) {
+      throw new Error(
+        "It's impossible to find the determinant of an empty matrix!",
+      );
+    }
+    const [upperTriangle, swaps] = this.toUpperTriangle();
+    let res = 1;
+    for (let i = 0; i < this.rows && res !== 0; i++) {
+      res *= upperTriangle.get(i, i);
+    }
+    return swaps % 2 === 0 ? res : -res;
+  }
+
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
