@@ -287,6 +287,23 @@ class Matrix {
     return matrix1.rows === matrix2.rows && matrix1.cols === matrix2.cols;
   }
 
+  #crossOut(destination, row, col) {
+    const otherMatrix = destination.#matrix;
+    const thisMatrix = this.#matrix;
+    const { rows, cols } = this;
+    let index = 0;
+    for (let i = 0, c = 0; i < rows; i++, c += cols) {
+      if (i === row) continue;
+      for (let j = 0; j < cols; j++) {
+        if (j === col) continue;
+        otherMatrix[index] = thisMatrix[c + j];
+        index++;
+      }
+    }
+    destination.s = otherMatrix;
+    return destination;
+  }
+
   #getNonZeroColIndex(start) {
     const matrix = this.#matrix;
     const rows = this.#rows;
