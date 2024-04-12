@@ -243,6 +243,23 @@ class Matrix {
     return swaps % 2 === 0 ? res : -res;
   }
 
+  rank() {
+    const [upperTriangle] = this.toUpperTriangle();
+    const min = Math.min(this.rows, this.cols);
+    let res = min;
+    for (let i = 0; i < min && res > 0; i++) {
+      let allZeros = true;
+      for (let j = 0; j < min; j++) {
+        if (upperTriangle.get(i, j) !== 0) {
+          allZeros = false;
+          break;
+        }
+      }
+      res -= allZeros;
+    }
+    return res;
+  }
+
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
