@@ -144,6 +144,22 @@ class Matrix {
     return destination;
   }
 
+  pow(destination, n) {
+    const { cols, rows } = this;
+    if (cols !== rows) {
+      throw new Error("It's impossible to exponentiate a non-square matrix!");
+    }
+    if (n === 0) {
+      return Matrix.identity(this.rows);
+    }
+    let cntOfMuls = Math.abs(n);
+    while (cntOfMuls > 1) {
+      this.mul(this, destination);
+      cntOfMuls--;
+    }
+    return n > 0 ? destination : this.inverse(destination);
+  }
+
   compose(matrix, destination) {
     if (this.cols !== matrix.rows) {
       throw new Error('Invalid matrix for multiplying!');
