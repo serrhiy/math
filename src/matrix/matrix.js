@@ -272,6 +272,17 @@ class Matrix {
     return destination;
   }
 
+  minor(row, col) {
+    const { rows, cols } = this;
+    if (row < 0 || row >= rows || col < 0 || col >= cols) {
+      throw new Error(
+        `Wrong index for finding the minor of the matrix: (${row}, ${col})`,
+      );
+    }
+    const matrix = Matrix.fromSize(rows - 1, cols - 1);
+    return this.#crossOut(matrix, row, col).determinant();
+  }
+
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
@@ -300,7 +311,6 @@ class Matrix {
         index++;
       }
     }
-    destination.s = otherMatrix;
     return destination;
   }
 
