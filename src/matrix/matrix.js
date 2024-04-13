@@ -283,6 +283,26 @@ class Matrix {
     return this.#crossOut(matrix, row, col).determinant();
   }
 
+  inverse(destination) {
+    const determinant = this.determinant();
+    if (determinant === 0) {
+      throw new Error(
+        'It is impossible to find the inverse ' +
+          'of a matrix if its determinant is 0',
+      );
+    }
+    const { rows, cols } = this;
+    const otherMatrix = destination.#matrix;
+    for (let i = 0, c = 0; i < cols; i++, c += cols) {
+      for (let j = 0; j < rows; j++) {
+        const matrixMinor = this.minor(j, i);
+        const sign = (i + j) % 2 === 0 ? 1 : -1;
+        otherMatrix[c + j] = (sign / determinant) * matrixMinor;
+      }
+    }
+    return destination;
+  }
+
   map(fn, destination, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
