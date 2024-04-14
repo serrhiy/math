@@ -5,6 +5,7 @@ class Matrix {
   #rows = 0;
   #cols = 0;
   #matrix = null;
+  #matrixConstructor = Matrix.DEFAULT_CONSTRUCTOR;
 
   static identity(size, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
     if (!Number.isInteger(size) || size < 0) {
@@ -14,7 +15,7 @@ class Matrix {
     for (let i = 0; i < size; i++) {
       typed[i * (size + 1)] = 1;
     }
-    return new Matrix(typed, size, size);
+    return new this(typed, size, size, Constructor);
   }
 
   static fromArray(
@@ -31,14 +32,14 @@ class Matrix {
       );
     }
     const typed = new Constructor(array);
-    return new Matrix(typed, rows, cols);
+    return new this(typed, rows, cols, Constructor);
   }
 
   static fromNestedArray(matrix, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
     const plain = matrix.flat(Infinity);
     const rows = matrix.length;
     const cols = matrix[0].length;
-    return Matrix.fromArray(plain, rows, cols, Constructor);
+    return this.fromArray(plain, rows, cols, Constructor);
   }
 
   static fromSize(rows, cols, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
@@ -54,19 +55,29 @@ class Matrix {
       throw new Error(`Invalid arguments: ${rows} and ${cols}`);
     }
     const typed = new Constructor(rows * cols);
-    return new Matrix(typed, rows, cols);
+    return new this(typed, rows, cols, Constructor);
   }
 
   static fromTypedArray(typed, rows, cols) {
     const { constructor: Constructor } = Object.getPrototypeOf(typed);
     const newTyped = new Constructor(typed);
-    return new Matrix(newTyped, rows, cols);
+    return new this(newTyped, rows, cols, Constructor);
   }
 
-  constructor(typedMatrix, rows, cols) {
+  static fromMatrix(matrix) {
+    if (!(matrix instanceof Matrix)) {
+      throw new Error(`Parameter ${matrix} is not instance of class Matrix`);
+    }
+    const { rows, cols } = matrix;
+    return this.fromTypedArray(matrix.#matrix, rows, cols);
+  }
+
+  constructor(typedMatrix, rows, cols, matrixConstructor) {
     this.#matrix = typedMatrix;
     this.#rows = rows;
     this.#cols = cols;
+    this.#matrixConstructor = matrixConstructor;
+    this.s = typedMatrix;
   }
 
   get(row, col) {
@@ -87,7 +98,11 @@ class Matrix {
     return this.#cols;
   }
 
-  sum(matrix, destination) {
+  get matrixConstructor() {
+    return this.#matrixConstructor;
+  }
+
+  sum(destination, matrix) {
     const matrixValid = Matrix.validForSum(this, matrix);
     const destValid = Matrix.validForSum(this, destination);
     if (!matrixValid || !destValid) {
@@ -98,10 +113,11 @@ class Matrix {
     }
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
-    return this.map((n, i) => thisMatrix[i] + otherMatrix[i], destination);
+    const map = Matrix.prototype.map.bind(this);
+    return map(destination, (n, i) => thisMatrix[i] + otherMatrix[i]);
   }
 
-  subtract(matrix, destination) {
+  subtract(destination, matrix) {
     const matrixValid = Matrix.validForSum(this, matrix);
     const destValid = Matrix.validForSum(this, destination);
     if (!matrixValid || !destValid) {
@@ -112,22 +128,25 @@ class Matrix {
     }
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
-    return this.map((n, i) => thisMatrix[i] - otherMatrix[i], destination);
+    const map = Matrix.prototype.map.bind(this);
+    return map(destination, (n, i) => thisMatrix[i] - otherMatrix[i]);
   }
 
-  mulOnNumber(x, destination) {
-    return this.map((n) => n * x, destination);
+  mulOnNumber(destination, x) {
+    const map = Matrix.prototype.map.bind(this);
+    return map(destination, (n) => n * x);
   }
 
-  mul(matrix, destination) {
+  mul(destination, matrix) {
     if (this.cols !== matrix.rows) {
       throw new Error('Invalid matrix for multiplying!');
     }
     const { cols: thisCols, rows: thisRows } = this;
     const { cols: otherCols } = matrix;
-    const destMatrix = destination.#matrix;
+
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
+    const destMatrix = destination.#matrix;
     let c = 0,
       t = 0;
     for (let i = 0; i < thisRows; i++) {
@@ -150,17 +169,21 @@ class Matrix {
       throw new Error("It's impossible to exponentiate a non-square matrix!");
     }
     if (n === 0) {
-      return Matrix.identity(this.rows);
+      return Matrix.identity(rows);
     }
     let cntOfMuls = Math.abs(n);
+    const mul = Matrix.prototype.mul.bind(this);
+    const inverse = Matrix.prototype.inverse.bind(this);
+    let matrix = this;
     while (cntOfMuls > 1) {
-      this.mul(this, destination);
+      mul(destination, matrix);
+      matrix = destination;
       cntOfMuls--;
     }
-    return n > 0 ? destination : this.inverse(destination);
+    return n > 0 ? destination : inverse(destination);
   }
 
-  compose(matrix, destination) {
+  compose(destination, matrix) {
     if (this.cols !== matrix.rows) {
       throw new Error('Invalid matrix for multiplying!');
     }
@@ -319,7 +342,7 @@ class Matrix {
     return destination;
   }
 
-  map(fn, destination, thisArg = null) {
+  map(destination, fn, thisArg = null) {
     const mapFn = fn.bind(thisArg);
     const length = destination.#rows * destination.#cols;
     const matrix = this.#matrix;
