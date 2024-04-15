@@ -1,144 +1,230 @@
 'use strict';
 
 class Matrix {
-  #matrix = [];
+  static DEFAULT_CONSTRUCTOR = Float64Array;
+  #rows = 0;
+  #cols = 0;
+  #matrix = null;
+  #matrixConstructor = Matrix.DEFAULT_CONSTRUCTOR;
 
-  static identity(n) {
-    if (!Number.isInteger(n) || n < 0) {
-      throw new Error(
-        'The dimension of the matrix must be a non-negative integer!',
-      );
+  static identity(size, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
+    if (!Number.isInteger(size) || size < 0) {
+      throw new Error('Matrix size must be a non-negative integer');
     }
-    const res = new Array(n).fill([]);
-    for (let i = 0; i < n; i++) {
-      res[i] = new Array(n).fill(0);
-      res[i][i] = 1;
+    const typed = new Constructor(size * size);
+    for (let i = 0; i < size; i++) {
+      typed[i * (size + 1)] = 1;
     }
-    return new Matrix(res);
+    return new this(typed, size, size, Constructor);
   }
 
-  constructor(a, b) {
-    if (this.#isMatrix(a) && typeof b === 'undefined') {
-      this.#matrix = structuredClone(a);
-      return;
-    }
-    if (!Number.isInteger(a) || !Number.isInteger(b)) {
+  static fromArray(
+    array,
+    rows,
+    cols,
+    Constructor = Matrix.DEFAULT_CONSTRUCTOR,
+  ) {
+    const { length } = array;
+    if (length !== rows * cols) {
       throw new Error(
-        `Unsupported types for constructor: ${typeof a} and ${typeof b}`,
+        `An array with length ${length} cannot be a matrix ` +
+          `with ${rows} rows and ${cols} columns`,
       );
     }
-    if (a < 0 || b < 0) {
+    const typed = new Constructor(array);
+    return new this(typed, rows, cols, Constructor);
+  }
+
+  static fromNestedArray(matrix, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
+    const plain = matrix.flat(Infinity);
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    return this.fromArray(plain, rows, cols, Constructor);
+  }
+
+  static fromSize(rows, cols, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
+    if (!Number.isInteger(rows) || !Number.isInteger(cols)) {
+      throw new Error(
+        `Unsupported types for constructor: ${typeof rows} and ${typeof cols}`,
+      );
+    }
+    if (rows < 0 || cols < 0) {
       throw new Error('The indices must be positive integers!');
     }
-    if ((a === 0 && b !== 0) || (b === 0 && a !== 0)) {
-      throw new Error(`Invalid arguments: ${a} and ${b}`);
+    if ((rows === 0 && cols !== 0) || (cols === 0 && rows !== 0)) {
+      throw new Error(`Invalid arguments: ${rows} and ${cols}`);
     }
-    this.#matrix = new Array(a).fill([]);
-    for (let i = 0; i < a; i++) {
-      this.#matrix[i] = new Array(b).fill(0);
-    }
+    const typed = new Constructor(rows * cols);
+    return new this(typed, rows, cols, Constructor);
   }
 
-  add(mat) {
-    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
-    if (!this.#isValidForSum(matrix)) {
+  static fromTypedArray(typed, rows, cols) {
+    const { constructor: Constructor } = Object.getPrototypeOf(typed);
+    const newTyped = new Constructor(typed);
+    return new this(newTyped, rows, cols, Constructor);
+  }
+
+  static fromMatrix(matrix) {
+    if (!(matrix instanceof Matrix)) {
+      throw new Error(`Parameter ${matrix} is not instance of class Matrix`);
+    }
+    const { rows, cols } = matrix;
+    return this.fromTypedArray(matrix.#matrix, rows, cols);
+  }
+
+  constructor(typedMatrix, rows, cols, matrixConstructor) {
+    this.#matrix = typedMatrix;
+    this.#rows = rows;
+    this.#cols = cols;
+    this.#matrixConstructor = matrixConstructor;
+  }
+
+  get(row, col) {
+    const index = row * this.#cols + col;
+    return this.#matrix[index];
+  }
+
+  set(row, col, value) {
+    const index = row * this.#cols + col;
+    this.#matrix[index] = value;
+  }
+
+  get rows() {
+    return this.#rows;
+  }
+
+  get cols() {
+    return this.#cols;
+  }
+
+  get matrixConstructor() {
+    return this.#matrixConstructor;
+  }
+
+  sum(destination, matrix) {
+    const matrixValid = Matrix.validForSum(this, matrix);
+    const destValid = Matrix.validForSum(this, destination);
+    if (!matrixValid || !destValid) {
       throw new Error(
         'Invalid matrix for sum! ' +
           'The dimensions of the matrices are not identical!',
       );
     }
-    return this.map((_, [i, j]) => this.#matrix[i][j] + matrix.#matrix[i][j]);
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    const map = Matrix.prototype.map.bind(this);
+    return map(destination, (n, i) => thisMatrix[i] + otherMatrix[i]);
   }
 
-  subtract(mat) {
-    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
-    if (!this.#isValidForSum(matrix)) {
+  subtract(destination, matrix) {
+    const matrixValid = Matrix.validForSum(this, matrix);
+    const destValid = Matrix.validForSum(this, destination);
+    if (!matrixValid || !destValid) {
       throw new Error(
         'Invalid matrix for subtract! ' +
           'The dimensions of the matrices are not identical!',
       );
     }
-    return this.map((_, [i, j]) => this.#matrix[i][j] - matrix.#matrix[i][j]);
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    const map = Matrix.prototype.map.bind(this);
+    return map(destination, (n, i) => thisMatrix[i] - otherMatrix[i]);
   }
 
-  mulOnNumber(x) {
-    if (typeof x !== 'number') {
-      throw new Error('Invalid argument! Argument type must be a number!');
-    }
-    return this.map((n) => n * x);
+  mulOnNumber(destination, x) {
+    const map = Matrix.prototype.map.bind(this);
+    return map(destination, (n) => n * x);
   }
 
-  mul(mat) {
-    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
+  mul(destination, matrix) {
     if (this.cols !== matrix.rows) {
       throw new Error('Invalid matrix for multiplying!');
     }
-    const res = new Matrix(this.rows, matrix.cols);
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < matrix.cols; j++) {
+    const { cols: thisCols, rows: thisRows } = this;
+    const { cols: otherCols } = matrix;
+
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    const destMatrix = destination.#matrix;
+    let c = 0,
+      t = 0;
+    for (let i = 0; i < thisRows; i++) {
+      for (let j = 0; j < otherCols; j++) {
         let sum = 0;
-        for (let k = 0; k < this.cols; k++) {
-          sum += this.#matrix[i][k] * matrix.#matrix[k][j];
+        for (let k = 0, r = 0; k < thisCols; k++, r += otherCols) {
+          sum += thisMatrix[c + k] * otherMatrix[r + j];
         }
-        res.#matrix[i][j] = sum;
+        destMatrix[t + j] = sum;
       }
+      c += thisCols;
+      t += otherCols;
     }
-    return res;
+    return destination;
   }
 
-  compose(mat) {
-    const matrix = mat instanceof Matrix ? mat : new Matrix(mat);
-    if (this.cols !== matrix.rows) {
-      throw new Error('Invalid matrix for composition!');
+  pow(destination, n) {
+    const { cols, rows } = this;
+    if (cols !== rows) {
+      throw new Error("It's impossible to exponentiate a non-square matrix!");
     }
-    const res = new Matrix(this.rows, matrix.cols);
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < matrix.cols; j++) {
-        for (let k = 0; k < this.cols; k++) {
-          if (this.#matrix[i][k] && matrix.#matrix[k][j]) {
-            res.#matrix[i][j] = 1;
+    if (n === 0) {
+      return Matrix.identity(rows);
+    }
+    let cntOfMuls = Math.abs(n);
+    const mul = Matrix.prototype.mul.bind(this);
+    const inverse = Matrix.prototype.inverse.bind(this);
+    let matrix = this;
+    while (cntOfMuls > 1) {
+      mul(destination, matrix);
+      matrix = destination;
+      cntOfMuls--;
+    }
+    return n > 0 ? destination : inverse(destination);
+  }
+
+  compose(destination, matrix) {
+    if (this.cols !== matrix.rows) {
+      throw new Error('Invalid matrix for multiplying!');
+    }
+    const { cols: thisCols, rows: thisRows } = this;
+    const { cols: otherCols } = matrix;
+    const destMatrix = destination.#matrix;
+    const thisMatrix = this.#matrix;
+    const otherMatrix = matrix.#matrix;
+    let c = 0,
+      t = 0;
+    for (let i = 0; i < thisRows; i++) {
+      for (let j = 0; j < otherCols; j++) {
+        for (let k = 0, r = 0; k < thisCols; k++, r += otherCols) {
+          if (thisMatrix[c + k] && otherMatrix[r + j]) {
+            destMatrix[t + j] = 1;
             break;
           }
         }
       }
+      c += thisCols;
+      t += otherCols;
     }
-    return res;
+    return destination;
   }
 
-  boolean_projecion() {
-    const res = new Matrix(this.rows, this.cols);
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        res.#matrix[i][j] = +!!this.#matrix[i][j];
-      }
+  booleanProjecion(destination) {
+    const length = this.#rows * this.#cols;
+    const thisMatrix = this.#matrix;
+    const destMatrix = destination.#matrix;
+    for (let i = 0; i < length; i++) {
+      destMatrix[i] = +!!thisMatrix[i];
     }
-    return res;
-  }
-
-  pow(n) {
-    if (this.cols !== this.rows) {
-      throw new Error("It's impossible to exponentiate a non-square matrix!");
-    }
-    if (!Number.isInteger(n)) {
-      throw new Error('The degree of the matrix must be an integer!');
-    }
-    if (n === 0) {
-      return Matrix.identity(this.rows);
-    }
-    let res = new Matrix(this.#matrix);
-    let cntOfMuls = Math.abs(n);
-    while (cntOfMuls > 1) {
-      res = res.mul(this);
-      cntOfMuls--;
-    }
-    return n > 0 ? res : res.inverse();
+    return destination;
   }
 
   // Gauss-Jordan method
   toUpperTriangle() {
-    const res = new Matrix(this.#matrix);
+    const { rows, cols } = this;
+    const res = Matrix.fromTypedArray(this.#matrix, rows, cols);
+    const matrix = res.#matrix;
     let swaps = 0;
-    for (let i = 0; i < res.rows - 1 && i < res.cols; i++) {
+    for (let i = 0, c = 0; i < rows - 1 && i < cols; i++, c += cols) {
       // The first column of the matrix from the left
       // that contains at least one non-zero value.
 
@@ -149,7 +235,7 @@ class Matrix {
       // then change the entire first row of the matrix from another
       // a row of the matrix where there is no zero in this column.
 
-      if (res.#matrix[i][nonZeroCol] === 0) {
+      if (matrix[c + nonZeroCol] === 0) {
         const nonZeroRow = res.#getNonZeroColInRowIndex(nonZeroCol, i);
         if (nonZeroRow === -1) continue;
         res.#swapRows(i, nonZeroRow);
@@ -162,32 +248,34 @@ class Matrix {
       // with the goal of getting the first element of each line
       // (except the first) to be zero.
 
-      const divider = res.#matrix[i][nonZeroCol] || 1;
+      const divider = matrix[c + nonZeroCol] || 1;
+      let r = (i + 1) * cols;
       for (let j = i + 1; j < res.rows && j < res.cols; j++) {
-        const firstElement = res.#matrix[j][i];
+        const firstElement = matrix[r + i];
         for (let k = i; k < res.cols; k++) {
-          res.#matrix[j][k] -= (res.#matrix[i][k] / divider) * firstElement;
+          matrix[r + k] -= (matrix[c + k] / divider) * firstElement;
         }
+        r += cols;
       }
     }
     return [res, swaps];
   }
 
   determinant() {
-    if (this.rows !== this.cols) {
+    if (this.#rows !== this.#cols) {
       throw new Error(
         "It's impossible to calculate " +
           'the determinant of a non-square matrix!',
       );
     }
-    if (this.rows === 0 && this.cols === 0) {
+    if (this.#rows === 0 && this.#cols === 0) {
       throw new Error(
         "It's impossible to find the determinant of an empty matrix!",
       );
     }
     const [upperTriangle, swaps] = this.toUpperTriangle();
-    let res = upperTriangle.get(0, 0);
-    for (let i = 1; i < this.rows && res !== 0; i++) {
+    let res = 1;
+    for (let i = 0; i < this.rows && res !== 0; i++) {
       res *= upperTriangle.get(i, i);
     }
     return swaps % 2 === 0 ? res : -res;
@@ -210,21 +298,30 @@ class Matrix {
     return res;
   }
 
-  tranpose() {
-    const res = new Matrix(this.cols, this.rows);
-    for (let i = 0; i < this.cols; i++) {
-      for (let j = 0; j < this.rows; j++) {
-        res.set(i, j, this.#matrix[j][i]);
+  tranpose(destination) {
+    const { cols } = this;
+    const otherMatrix = destination.#matrix;
+    const thisMatrix = this.#matrix;
+    for (let i = 0, c = 0; i < this.cols; i++, c += cols) {
+      for (let j = 0, t = 0; j < this.rows; j++, t += cols) {
+        otherMatrix[c + j] = thisMatrix[t + i];
       }
     }
-    return res;
+    return destination;
   }
 
   minor(row, col) {
-    return this.#crossOut(row, col).determinant();
+    const { rows, cols } = this;
+    if (row < 0 || row >= rows || col < 0 || col >= cols) {
+      throw new Error(
+        `Wrong index for finding the minor of the matrix: (${row}, ${col})`,
+      );
+    }
+    const matrix = Matrix.fromSize(rows - 1, cols - 1);
+    return this.#crossOut(matrix, row, col).determinant();
   }
 
-  inverse() {
+  inverse(destination) {
     const determinant = this.determinant();
     if (determinant === 0) {
       throw new Error(
@@ -232,140 +329,93 @@ class Matrix {
           'of a matrix if its determinant is 0',
       );
     }
-    const res = new Array(this.cols).fill([]);
-    for (let i = 0; i < this.cols; i++) {
-      res[i] = new Array(this.rows).fill(0);
-      for (let j = 0; j < this.rows; j++) {
+    const { rows, cols } = this;
+    const otherMatrix = destination.#matrix;
+    for (let i = 0, c = 0; i < cols; i++, c += cols) {
+      for (let j = 0; j < rows; j++) {
         const matrixMinor = this.minor(j, i);
         const sign = (i + j) % 2 === 0 ? 1 : -1;
-        res[i][j] = (sign / determinant) * matrixMinor;
+        otherMatrix[c + j] = (sign / determinant) * matrixMinor;
       }
     }
-    return new Matrix(res);
+    return destination;
   }
 
-  toArray() {
-    return structuredClone(this.#matrix);
-  }
-
-  get(row, col) {
-    if (!this.#isValidRowIndex(row)) {
-      throw new Error(`Invalid row index: ${row}!`);
-    }
-    if (!this.#isValidColIndex(col)) {
-      throw new Error(`Invalid col index: ${col}!`);
-    }
-    return this.#matrix[row][col];
-  }
-
-  set(row, col, value) {
-    if (typeof value !== 'number') {
-      throw new Error('All elements of the matrix must be numbers!');
-    }
-    if (!this.#isValidRowIndex(row)) {
-      throw new Error(`Invalid row index: ${row}!`);
-    }
-    if (!this.#isValidColIndex(col)) {
-      throw new Error(`Invalid col index: ${col}!`);
-    }
-    this.#matrix[row][col] = value;
-  }
-
-  map(fn, thisArg) {
+  map(destination, fn, thisArg = null) {
     const mapFn = fn.bind(thisArg);
-    const res = new Matrix(this.rows, this.cols);
-    for (let i = 0; i < this.rows; i++) {
-      for (let j = 0; j < this.cols; j++) {
-        res.#matrix[i][j] = mapFn(this.#matrix[i][j], [i, j], this);
-      }
+    const length = destination.#rows * destination.#cols;
+    const matrix = this.#matrix;
+    const destMatrix = destination.#matrix;
+    for (let i = 0; i < length; i++) {
+      destMatrix[i] = mapFn(matrix[i], i, this);
     }
-    return res;
+    return destination;
   }
 
-  get rows() {
-    return this.#matrix.length;
+  static validForSum(matrix1, matrix2) {
+    return matrix1.rows === matrix2.rows && matrix1.cols === matrix2.cols;
   }
 
-  get cols() {
-    return this.#matrix[0]?.length ?? 0;
-  }
-
-  [Symbol.iterator]() {
-    return {
-      i: 0,
-      matrix: this.#matrix,
-      next() {
-        return {
-          done: this.i >= this.matrix.length,
-          value: this.matrix[this.i++],
-        };
-      },
-    };
-  }
-
-  #crossOut(row, col) {
-    if (!this.#isValidRowIndex(row)) {
-      throw new Error(`Invalid row index: ${row}!`);
-    }
-    if (!this.#isValidColIndex(col)) {
-      throw new Error(`Invalid col index: ${row}!`);
-    }
-    const res = [];
-    for (let i = 0; i < this.rows; i++) {
+  #crossOut(destination, row, col) {
+    const otherMatrix = destination.#matrix;
+    const thisMatrix = this.#matrix;
+    const { rows, cols } = this;
+    let index = 0;
+    for (let i = 0, c = 0; i < rows; i++, c += cols) {
       if (i === row) continue;
-      res.push([]);
-      for (let j = 0; j < this.cols; j++) {
+      for (let j = 0; j < cols; j++) {
         if (j === col) continue;
-        res.at(-1).push(this.#matrix[i][j]);
+        otherMatrix[index] = thisMatrix[c + j];
+        index++;
       }
     }
-    return new Matrix(res);
+    return destination;
   }
 
-  #isMatrix(matrix) {
-    if (!Array.isArray(matrix)) return false;
-    const countOfCols = matrix[0]?.length;
-    for (const row of matrix) {
-      if (!Array.isArray(row)) return false;
-      if (row.some((x) => typeof x !== 'number')) return false;
-      if (row.length !== countOfCols) return false;
-    }
-    return true;
-  }
-
-  #isValidForSum(matrix) {
-    return this.rows === matrix.rows && this.cols === matrix.cols;
-  }
-
-  #isValidRowIndex(row) {
-    return Number.isInteger(row) && row < this.rows && row >= 0;
-  }
-
-  #isValidColIndex(col) {
-    return Number.isInteger(col) && col < this.cols && col >= 0;
-  }
-
-  #getNonZeroColIndex(k) {
-    for (let i = k; i < this.cols; i++) {
-      for (let j = k; j < this.rows; j++) {
-        if (this.#matrix[j][i] !== 0) return i;
+  #getNonZeroColIndex(start) {
+    const matrix = this.#matrix;
+    const rows = this.#rows;
+    const cols = this.#cols;
+    for (let i = start; i < cols; i++) {
+      for (let j = start, k = i; j < rows; j++, k += cols) {
+        if (matrix[k] !== 0) return i;
       }
     }
     return -1;
   }
 
-  #getNonZeroColInRowIndex(colIndex, k) {
-    for (let i = k; i < this.rows; i++) {
-      if (this.#matrix[i][colIndex] !== 0) return i;
+  #getNonZeroColInRowIndex(colIndex, start) {
+    const matrix = this.#matrix;
+    const index = colIndex * this.#cols;
+    for (let i = start; i < this.rows; i++) {
+      if (matrix[index + i] !== 0) return i;
     }
     return -1;
   }
 
-  #swapRows(row1, row2) {
-    const temp = this.#matrix[row1];
-    this.#matrix[row1] = this.#matrix[row2];
-    this.#matrix[row2] = temp;
+  #swapRows(row1Index, row2Index) {
+    const cols = this.#cols;
+    const matrix = this.#matrix;
+    const indexR1 = row1Index * cols;
+    const indexR2 = row2Index * cols;
+    for (let i = 0; i < cols; i++) {
+      const temp = matrix[indexR1 + i];
+      matrix[indexR1 + i] = matrix[indexR2 + i];
+      matrix[indexR2 + i] = temp;
+    }
   }
 }
 
-module.exports = Matrix;
+module.exports = {
+  Matrix,
+  mutable: ['mul', 'compose', 'pow'],
+  immutable: [
+    'sum',
+    'subtract',
+    'mulOnNumber',
+    'booleanProjecion',
+    'tranpose',
+    'inverse',
+    'map',
+  ],
+};

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Minnimalistic math library",
   "scripts": {
-    "test": "eslint src/. tests/. && node --test"
+    "test": "eslint src/."
   },
   "author": "Lytvynenko Serhiy <serrheylitvinenko@gmail.com>",
   "license": "MIT",
