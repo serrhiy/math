@@ -1,6 +1,6 @@
 'use strict';
 
-const { Matrix, mutable, immutable } = require('./matrix.js');
+const { Matrix, mutable, immutable } = require('./baseMatrix.js');
 
 class MutableMatrix extends Matrix {}
 
