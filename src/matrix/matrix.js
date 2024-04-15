@@ -77,7 +77,6 @@ class Matrix {
     this.#rows = rows;
     this.#cols = cols;
     this.#matrixConstructor = matrixConstructor;
-    this.s = typedMatrix;
   }
 
   get(row, col) {
@@ -407,4 +406,16 @@ class Matrix {
   }
 }
 
-module.exports = Matrix;
+module.exports = {
+  Matrix,
+  mutable: ['mul', 'compose', 'pow'],
+  immutable: [
+    'sum',
+    'subtract',
+    'mulOnNumber',
+    'booleanProjecion',
+    'tranpose',
+    'inverse',
+    'map',
+  ],
+};
