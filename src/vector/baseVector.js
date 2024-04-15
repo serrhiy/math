@@ -30,6 +30,14 @@ class Vector {
     this.#vector = typed;
     this.#vectorConstructor = vectorConstructor;
   }
+
+  get (i) {
+    return this.#vector[i];
+  }
+
+  set (i, value) {
+    this.#vector[i] = value;
+  }
 }
 
 module.exports = Vector;
