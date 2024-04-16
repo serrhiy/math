@@ -54,6 +54,17 @@ class Vector {
     }
     return thisVector.reduce((acc, n, i) => acc + n * otherVector[i], 0);
   }
+
+  map(destination, fn, thisArg) {
+    const mapFn = fn.bind(thisArg);
+    const destVector = destination.#vector;
+    const thisVector = this.#vector;
+    const { length } = thisVector;
+    for (let i = 0; i < length; i++) {
+      destVector[i] = mapFn(thisVector[i], i, this);
+    }
+    return destination;
+  }
 }
 
 module.exports = Vector;
