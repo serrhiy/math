@@ -43,6 +43,17 @@ class Vector {
     const length = this.#vector.reduce((acc, x) => acc + x * x, 0);
     return Math.sqrt(length);
   }
+
+  dotProduct(vector) {
+    const thisVector = this.#vector;
+    const otherVector = vector.#vector;
+    if (thisVector.length !== otherVector.length) {
+      throw new Error(
+        'It is impossible to find the dot product of different dimensional vectors',
+      );
+    }
+    return thisVector.reduce((acc, n, i) => acc + n * otherVector[i], 0);
+  }
 }
 
 module.exports = Vector;
