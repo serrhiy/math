@@ -321,6 +321,19 @@ class Matrix {
     return this.#crossOut(matrix, row, col).determinant();
   }
 
+  adjugate(destination) {
+    const { rows, cols } = this;
+    const otherMatrix = destination.#matrix;
+    for (let i = 0, c = 0; i < cols; i++, c += cols) {
+      for (let j = 0; j < rows; j++) {
+        const matrixMinor = this.minor(j, i);
+        const sign = (i + j) % 2 === 0 ? 1 : -1;
+        otherMatrix[c + j] = sign * matrixMinor;
+      }
+    }
+    return destination;
+  }
+
   inverse(destination) {
     const determinant = this.determinant();
     if (determinant === 0) {
@@ -329,16 +342,9 @@ class Matrix {
           'of a matrix if its determinant is 0',
       );
     }
-    const { rows, cols } = this;
-    const otherMatrix = destination.#matrix;
-    for (let i = 0, c = 0; i < cols; i++, c += cols) {
-      for (let j = 0; j < rows; j++) {
-        const matrixMinor = this.minor(j, i);
-        const sign = (i + j) % 2 === 0 ? 1 : -1;
-        otherMatrix[c + j] = (sign / determinant) * matrixMinor;
-      }
-    }
-    return destination;
+    this.adjugate(destination);
+    const mulOnNumber = Matrix.prototype.mulOnNumber.bind(destination);
+    return mulOnNumber(destination, 1 / determinant);
   }
 
   map(destination, fn, thisArg = null) {
@@ -417,5 +423,6 @@ module.exports = {
     'tranpose',
     'inverse',
     'map',
+    'adjugate',
   ],
 };
