@@ -1,5 +1,7 @@
 'use strict';
 
+const Matrix = require('../matrix/matrix.js').mutable;
+
 class Vector {
   static DEFAULT_CONSTRUCTOR = Float64Array;
   #vector = null;
@@ -73,7 +75,30 @@ class Vector {
   }
 
   angleBetweenVectors(vector) {
-    return Math.acos(this.dotProduct(vector) / (this.length() * vector.length()));
+    return Math.acos(
+      this.dotProduct(vector) / (this.length() * vector.length()),
+    );
+  }
+
+  crossProduct(destination, ...vectors) {
+    if (vectors.length === 0) {
+      throw new Error('The function crossProduct must accept vectors');
+    }
+    vectors.unshift(this);
+    const { length } = this.#vector;
+    const matrix = Matrix.fromSize(length, length, this.#vectorConstructor);
+    for (let i = 0; i < length - 1; i++) {
+      const vector = vectors[i].#vector;
+      for (let j = 0; j < length; j++) {
+        matrix.set(i, j, vector[j]);
+      }
+    }
+    const destVector = destination.#vector;
+    const adjugated = matrix.adjugate();
+    for (let i = 0; i < length; i++) {
+      destVector[i] = adjugated.get(i, length - 1);
+    }
+    return destination;
   }
 
   map(destination, fn, thisArg) {

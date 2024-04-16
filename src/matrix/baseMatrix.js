@@ -414,15 +414,13 @@ class Matrix {
 
 module.exports = {
   Matrix,
-  mutable: ['mul', 'compose', 'pow'],
+  mutable: ['mul', 'compose', 'pow', 'inverse', 'adjugate'],
   immutable: [
     'sum',
     'subtract',
     'mulOnNumber',
     'booleanProjecion',
     'tranpose',
-    'inverse',
     'map',
-    'adjugate',
   ],
 };
