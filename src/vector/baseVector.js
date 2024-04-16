@@ -60,6 +60,18 @@ class Vector {
     return map(destination, (n) => x * n);
   }
 
+  sum(destination, vector) {
+    const otherVector = vector.#vector;
+    const map = Vector.prototype.map.bind(this);
+    return map(destination, (n, i) => n + otherVector[i]);
+  }
+
+  subtract(destination, vector) {
+    const otherVector = vector.#vector;
+    const map = Vector.prototype.map.bind(this);
+    return map(destination, (n, i) => n - otherVector[i]);
+  }
+
   map(destination, fn, thisArg) {
     const mapFn = fn.bind(thisArg);
     const destVector = destination.#vector;
