@@ -55,6 +55,11 @@ class Vector {
     return thisVector.reduce((acc, n, i) => acc + n * otherVector[i], 0);
   }
 
+  nulOnNumber(destination, x) {
+    const map = Vector.prototype.map.bind(this);
+    return map(destination, (n) => x * n);
+  }
+
   map(destination, fn, thisArg) {
     const mapFn = fn.bind(thisArg);
     const destVector = destination.#vector;
