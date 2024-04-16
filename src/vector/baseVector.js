@@ -72,6 +72,10 @@ class Vector {
     return map(destination, (n, i) => n - otherVector[i]);
   }
 
+  angleBetweenVectors(vector) {
+    return Math.acos(this.dotProduct(vector) / (this.length() * vector.length()));
+  }
+
   map(destination, fn, thisArg) {
     const mapFn = fn.bind(thisArg);
     const destVector = destination.#vector;
