@@ -31,12 +31,17 @@ class Vector {
     this.#vectorConstructor = vectorConstructor;
   }
 
-  get (i) {
+  get(i) {
     return this.#vector[i];
   }
 
-  set (i, value) {
+  set(i, value) {
     this.#vector[i] = value;
+  }
+
+  length() {
+    const length = this.#vector.reduce((acc, x) => acc + x * x, 0);
+    return Math.sqrt(length);
   }
 }
 
