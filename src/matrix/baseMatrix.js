@@ -414,7 +414,7 @@ class Matrix {
 
 module.exports = {
   Matrix,
-  mutable: ['mul', 'compose', 'pow', 'inverse', 'adjugate'],
+  mutable: ['compose', 'pow', 'inverse', 'adjugate'],
   immutable: [
     'sum',
     'subtract',
@@ -422,5 +422,18 @@ module.exports = {
     'booleanProjecion',
     'tranpose',
     'map',
+  ],
+  specials: [
+    [
+      'mul',
+      (m1, ...args) => {
+        const { constructor: Constructor } = Object.getPrototypeOf(m1);
+        return Constructor.fromSize(
+          m1.rows,
+          args[0].cols,
+          m1.matrixConstructor,
+        );
+      },
+    ],
   ],
 };

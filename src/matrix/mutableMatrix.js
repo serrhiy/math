@@ -1,6 +1,6 @@
 'use strict';
 
-const { Matrix, mutable, immutable } = require('./baseMatrix.js');
+const { Matrix, mutable, immutable, specials } = require('./baseMatrix.js');
 
 class MutableMatrix extends Matrix {}
 
@@ -14,6 +14,13 @@ for (const fnName of mutable) {
   MutableMatrix.prototype[fnName] = function (...args) {
     const matrix = MutableMatrix.fromMatrix(this);
     return Matrix.prototype[fnName].call(this, matrix, ...args);
+  };
+}
+
+for (const [name, factory] of specials) {
+  MutableMatrix.prototype[name] = function (...args) {
+    const matrix = factory(this, ...args);
+    return Matrix.prototype[name].call(this, matrix, ...args);
   };
 }
 
