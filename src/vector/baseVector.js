@@ -45,6 +45,10 @@ class Vector {
     return this.#vector.length;
   }
 
+  get VectorConstructor() {
+    return this.#vectorConstructor;
+  }
+
   length() {
     const length = this.#vector.reduce((acc, x) => acc + x * x, 0);
     return Math.sqrt(length);

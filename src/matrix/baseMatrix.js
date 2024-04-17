@@ -162,6 +162,27 @@ class Matrix {
     return destination;
   }
 
+  mulOnVector(vector) {
+    const { cols, rows } = this;
+    if (cols !== vector.size) {
+      throw new Error(
+        `It is impossible to multiply a matrix with ${this.cols} ` +
+          `rows by a vector of dimension ${vector.size}`,
+      );
+    }
+    const matrix = this.#matrix;
+    const typed = new vector.VectorConstructor(cols);
+    for (let i = 0, c = 0; i < rows; i++, c += cols) {
+      let sum = 0;
+      for (let j = 0; j < cols; j++) {
+        sum += matrix[c + j] * vector.get(j);
+      }
+      typed[i] = sum;
+    }
+    const { constructor: Constructor } = Object.getPrototypeOf(vector);
+    return new Constructor(typed, vector.VectorConstructor);
+  }
+
   pow(destination, n) {
     const { cols, rows } = this;
     if (cols !== rows) {
