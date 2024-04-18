@@ -65,7 +65,7 @@ class Vector {
     return thisVector.reduce((acc, n, i) => acc + n * otherVector[i], 0);
   }
 
-  nulOnNumber(destination, x) {
+  mulOnNumber(destination, x) {
     const map = Vector.prototype.map.bind(this);
     return map(destination, (n) => x * n);
   }
@@ -80,6 +80,12 @@ class Vector {
     const otherVector = vector.#vector;
     const map = Vector.prototype.map.bind(this);
     return map(destination, (n, i) => n - otherVector[i]);
+  }
+
+  normalize(destination) {
+    const length = this.length();
+    const mulOnNumber = Vector.prototype.mulOnNumber.bind(this);
+    return mulOnNumber(destination, 1 / length);
   }
 
   angleBetweenVectors(vector) {
