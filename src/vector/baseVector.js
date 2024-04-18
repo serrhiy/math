@@ -114,6 +114,22 @@ class Vector {
     return true;
   }
 
+  mixedProduct(...vectors) {
+    const { size, VectorConstructor } = this;
+    if (vectors.length + 1 !== size) {
+      throw new Error('Invalid vectors to find mixed product');
+    }
+    vectors.push(this);
+    const matrix = Matrix.fromSize(size, size, VectorConstructor);
+    for (let i = 0; i < size; i++) {
+      const vector = vectors[i].#vector;
+      for (let j = 0; j < size; j++) {
+        matrix.set(i, j, vector[j]);
+      }
+    }
+    return matrix.determinant();
+  }
+
   angleBetweenVectors(vector) {
     return Math.acos(
       this.dotProduct(vector) / (this.length() * vector.length()),
