@@ -169,4 +169,14 @@ class Vector {
   }
 }
 
-module.exports = Vector;
+module.exports = {
+  Vector,
+  functions: [
+    'mulOnNumber',
+    'sum',
+    'subtract',
+    'normalize',
+    'crossProduct',
+    'map',
+  ],
+};
