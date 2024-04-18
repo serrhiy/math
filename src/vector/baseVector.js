@@ -88,6 +88,10 @@ class Vector {
     return mulOnNumber(destination, 1 / length);
   }
 
+  isOrthogonalTo(vector) {
+    return this.dotProduct(vector) === 0;
+  }
+
   angleBetweenVectors(vector) {
     return Math.acos(
       this.dotProduct(vector) / (this.length() * vector.length()),
