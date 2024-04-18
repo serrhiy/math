@@ -2,6 +2,10 @@
 
 const Matrix = require('../matrix/matrix.js').mutable;
 
+const INNACURACY = 1e-6;
+
+const roughlyEqual = (x, y) => x >= y - INNACURACY && x <= y + INNACURACY;
+
 class Vector {
   static DEFAULT_CONSTRUCTOR = Float64Array;
   #vector = null;
@@ -90,6 +94,24 @@ class Vector {
 
   isOrthogonalTo(vector) {
     return this.dotProduct(vector) === 0;
+  }
+
+  isParallelTo(vector) {
+    const { size: thisSize } = this;
+    const { size: otherSize } = vector;
+    if (thisSize !== otherSize) {
+      throw new Error(
+        `Vectors are of different dimensions: ${thisSize} and ${otherSize}`,
+      );
+    }
+    const thisVector = this.#vector;
+    const otherVector = vector.#vector;
+    const div = otherVector[0] ? thisVector[0] / otherVector[0] : 0;
+    for (let i = 1; i < thisSize; i++) {
+      const x = otherVector[i] ? thisVector[i] / otherVector[i] : 0;
+      if (!roughlyEqual(x, div)) return false;
+    }
+    return true;
   }
 
   angleBetweenVectors(vector) {
