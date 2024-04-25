@@ -1,13 +1,14 @@
 'use strict';
 
+const DEFAULT_CONSTRUCTOR = Float64Array;
+
 class Matrix {
-  static DEFAULT_CONSTRUCTOR = Float64Array;
   #rows = 0;
   #cols = 0;
   #matrix = null;
-  #matrixConstructor = Matrix.DEFAULT_CONSTRUCTOR;
+  #matrixConstructor = DEFAULT_CONSTRUCTOR;
 
-  static identity(size, TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR) {
+  static identity(size, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
     if (!Number.isInteger(size) || size < 0) {
       throw new Error('Matrix size must be a non-negative integer');
     }
@@ -18,12 +19,7 @@ class Matrix {
     return new this(typed, size, size, TypedArrayClass);
   }
 
-  static fromArray(
-    array,
-    rows,
-    cols,
-    TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR,
-  ) {
+  static fromArray(array, rows, cols, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
     const { length } = array;
     if (length !== rows * cols) {
       const place = `with ${rows} rows and ${cols} columns`;
@@ -34,14 +30,14 @@ class Matrix {
     return new this(typed, rows, cols, TypedArrayClass);
   }
 
-  static fromNestedArray(matrix, TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR) {
+  static fromNestedArray(matrix, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
     const plain = matrix.flat(Infinity);
     const rows = matrix.length;
     const cols = matrix[0].length;
     return this.fromArray(plain, rows, cols, TypedArrayClass);
   }
 
-  static fromSize(rows, cols, TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR) {
+  static fromSize(rows, cols, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
     if (!Number.isInteger(rows) || !Number.isInteger(cols)) {
       throw new Error(
         `Unsupported types for constructor: ${typeof rows} and ${typeof cols}`,
@@ -448,8 +444,8 @@ module.exports = {
     [
       'mul',
       (m1, ...args) => {
-        const { constructor: Constructor } = Object.getPrototypeOf(m1);
-        return Constructor.fromSize(
+        const { constructor: TypedArrayClass } = Object.getPrototypeOf(m1);
+        return TypedArrayClass.fromSize(
           m1.rows,
           args[0].cols,
           m1.matrixConstructor,
