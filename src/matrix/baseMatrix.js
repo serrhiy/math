@@ -7,42 +7,41 @@ class Matrix {
   #matrix = null;
   #matrixConstructor = Matrix.DEFAULT_CONSTRUCTOR;
 
-  static identity(size, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
+  static identity(size, TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR) {
     if (!Number.isInteger(size) || size < 0) {
       throw new Error('Matrix size must be a non-negative integer');
     }
-    const typed = new Constructor(size * size);
+    const typed = new TypedArrayClass(size * size);
     for (let i = 0; i < size; i++) {
       typed[i * (size + 1)] = 1;
     }
-    return new this(typed, size, size, Constructor);
+    return new this(typed, size, size, TypedArrayClass);
   }
 
   static fromArray(
     array,
     rows,
     cols,
-    Constructor = Matrix.DEFAULT_CONSTRUCTOR,
+    TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR,
   ) {
     const { length } = array;
     if (length !== rows * cols) {
-      throw new Error(
-        `An array with length ${length} cannot be a matrix ` +
-          `with ${rows} rows and ${cols} columns`,
-      );
+      const place = `with ${rows} rows and ${cols} columns`;
+      const msg = `An array with length ${length} cannot be a matrix ${place}`;
+      throw new Error(msg);
     }
-    const typed = new Constructor(array);
-    return new this(typed, rows, cols, Constructor);
+    const typed = new TypedArrayClass(array);
+    return new this(typed, rows, cols, TypedArrayClass);
   }
 
-  static fromNestedArray(matrix, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
+  static fromNestedArray(matrix, TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR) {
     const plain = matrix.flat(Infinity);
     const rows = matrix.length;
     const cols = matrix[0].length;
-    return this.fromArray(plain, rows, cols, Constructor);
+    return this.fromArray(plain, rows, cols, TypedArrayClass);
   }
 
-  static fromSize(rows, cols, Constructor = Matrix.DEFAULT_CONSTRUCTOR) {
+  static fromSize(rows, cols, TypedArrayClass = Matrix.DEFAULT_CONSTRUCTOR) {
     if (!Number.isInteger(rows) || !Number.isInteger(cols)) {
       throw new Error(
         `Unsupported types for constructor: ${typeof rows} and ${typeof cols}`,
@@ -54,14 +53,14 @@ class Matrix {
     if ((rows === 0 && cols !== 0) || (cols === 0 && rows !== 0)) {
       throw new Error(`Invalid arguments: ${rows} and ${cols}`);
     }
-    const typed = new Constructor(rows * cols);
-    return new this(typed, rows, cols, Constructor);
+    const typed = new TypedArrayClass(rows * cols);
+    return new this(typed, rows, cols, TypedArrayClass);
   }
 
   static fromTypedArray(typed, rows, cols) {
-    const { constructor: Constructor } = Object.getPrototypeOf(typed);
-    const newTyped = new Constructor(typed);
-    return new this(newTyped, rows, cols, Constructor);
+    const { constructor: TypedArrayClass } = Object.getPrototypeOf(typed);
+    const newTyped = new TypedArrayClass(typed);
+    return new this(newTyped, rows, cols, TypedArrayClass);
   }
 
   static fromMatrix(matrix) {
@@ -138,7 +137,7 @@ class Matrix {
 
   mul(destination, matrix) {
     if (this.cols !== matrix.rows) {
-      throw new Error('Invalid matrix for multiplying!');
+      throw new Error('Invalid matrix for multiplying');
     }
     const { cols: thisCols, rows: thisRows } = this;
     const { cols: otherCols } = matrix;
@@ -146,8 +145,8 @@ class Matrix {
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
     const destMatrix = destination.#matrix;
-    let c = 0,
-      t = 0;
+    let c = 0;
+    let t = 0;
     for (let i = 0; i < thisRows; i++) {
       for (let j = 0; j < otherCols; j++) {
         let sum = 0;
@@ -212,8 +211,8 @@ class Matrix {
     const destMatrix = destination.#matrix;
     const thisMatrix = this.#matrix;
     const otherMatrix = matrix.#matrix;
-    let c = 0,
-      t = 0;
+    let c = 0;
+    let t = 0;
     for (let i = 0; i < thisRows; i++) {
       for (let j = 0; j < otherCols; j++) {
         for (let k = 0, r = 0; k < thisCols; k++, r += otherCols) {
@@ -283,13 +282,14 @@ class Matrix {
   }
 
   determinant() {
-    if (this.#rows !== this.#cols) {
+    const { rows, cols } = this;
+    if (rows !== cols) {
       throw new Error(
         "It's impossible to calculate " +
           'the determinant of a non-square matrix!',
       );
     }
-    if (this.#rows === 0 && this.#cols === 0) {
+    if (rows === 0 && cols === 0) {
       throw new Error(
         "It's impossible to find the determinant of an empty matrix!",
       );
