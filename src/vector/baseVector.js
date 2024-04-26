@@ -1,6 +1,6 @@
 'use strict';
 
-const Matrix = require('../matrix/matrix.js').mutable;
+const Matrix = require('../matrix/immutableMatrix.js');
 
 const INNACURACY = 1e-6;
 
