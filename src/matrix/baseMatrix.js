@@ -19,7 +19,8 @@ class Matrix {
       typed[index] = 1;
       index += size + 1;
     }
-    return new this(typed, size, size, TypedArrayClass);
+    const MatrixClass = this;
+    return new MatrixClass(typed, size, size, TypedArrayClass);
   }
 
   static fromArray(array, rows, cols, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
@@ -30,14 +31,16 @@ class Matrix {
       throw new Error(msg);
     }
     const typed = new TypedArrayClass(array);
-    return new this(typed, rows, cols, TypedArrayClass);
+    const MatrixClass = this;
+    return new MatrixClass(typed, rows, cols, TypedArrayClass);
   }
 
   static fromNestedArray(matrix, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
     const plain = matrix.flat(Infinity);
     const rows = matrix.length;
     const cols = matrix[0].length;
-    return this.fromArray(plain, rows, cols, TypedArrayClass);
+    const MatrixClass = this;
+    return MatrixClass.fromArray(plain, rows, cols, TypedArrayClass);
   }
 
   static fromSize(rows, cols, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
@@ -53,13 +56,15 @@ class Matrix {
       throw new Error(`Invalid arguments: ${rows} and ${cols}`);
     }
     const typed = new TypedArrayClass(rows * cols);
-    return new this(typed, rows, cols, TypedArrayClass);
+    const MatrixClass = this;
+    return new MatrixClass(typed, rows, cols, TypedArrayClass);
   }
 
   static fromTypedArray(typed, rows, cols) {
     const { constructor: TypedArrayClass } = Object.getPrototypeOf(typed);
     const newTyped = new TypedArrayClass(typed);
-    return new this(newTyped, rows, cols, TypedArrayClass);
+    const MatrixClass = this;
+    return new MatrixClass(newTyped, rows, cols, TypedArrayClass);
   }
 
   static fromMatrix(matrix) {
@@ -67,7 +72,8 @@ class Matrix {
       throw new Error(`Parameter ${matrix} is not instance of class Matrix`);
     }
     const { rows, cols } = matrix;
-    return this.fromTypedArray(matrix.#matrix, rows, cols);
+    const MatrixClass = this;
+    return MatrixClass.fromTypedArray(matrix.#matrix, rows, cols);
   }
 
   constructor(typedMatrix, rows, cols, matrixConstructor) {
