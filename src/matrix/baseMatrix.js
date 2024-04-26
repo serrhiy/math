@@ -12,9 +12,12 @@ class Matrix {
     if (!Number.isInteger(size) || size < 0) {
       throw new Error('Matrix size must be a non-negative integer');
     }
-    const typed = new TypedArrayClass(size * size);
-    for (let i = 0; i < size; i++) {
-      typed[i * (size + 1)] = 1;
+    const length = size * size;
+    let index = 0;
+    const typed = new TypedArrayClass(length);
+    while (index <= length) {
+      typed[index] = 1;
+      index += size + 1;
     }
     return new this(typed, size, size, TypedArrayClass);
   }
