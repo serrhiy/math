@@ -2,34 +2,37 @@
 
 const Matrix = require('../matrix/immutableMatrix.js');
 
+const DEFAULT_CONSTRUCTOR = Float64Array;
+
 const INNACURACY = 1e-6;
 
 const roughlyEqual = (x, y) => x >= y - INNACURACY && x <= y + INNACURACY;
 
 class Vector {
-  static DEFAULT_CONSTRUCTOR = Float64Array;
   #vector = null;
   #vectorConstructor = Vector.DEFAULT_CONSTRUCTOR;
 
-  static fromArray(array, Constructor = Vector.DEFAULT_CONSTRUCTOR) {
-    const typed = new Constructor(array);
-    return new this(typed, Constructor);
+  static fromArray(array, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
+    const typed = new TypedArrayClass(array);
+    const VectorClass = this;
+    return new VectorClass(typed, TypedArrayClass);
   }
 
-  static fromSize(length, Constructor = Vector.DEFAULT_CONSTRUCTOR) {
+  static fromSize(length, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
     if (!Number.isInteger(length) || length < 0) {
       throw new Error(`Unsupported length value for constructor: ${length}`);
     }
-    const typed = new Constructor(length);
-    return new this(typed, Constructor);
+    const typed = new TypedArrayClass(length);
+    const VectorClass = this;
+    return new VectorClass(typed, TypedArrayClass);
   }
 
   static fromVertex(vector) {
     if (!(vector instanceof Vector)) {
       throw new Error(`Parameter ${vector} is not instance of class Vector`);
     }
-    const { constructor: Constructor } = Object.getPrototypeOf(vector);
-    return new this(vector.#vector, Constructor);
+    const { constructor: TypedArrayClass } = Object.getPrototypeOf(vector);
+    return new this(vector.#vector, TypedArrayClass);
   }
 
   constructor(typed, vectorConstructor) {
