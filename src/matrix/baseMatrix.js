@@ -105,6 +105,11 @@ class Matrix {
     return this.#matrixConstructor;
   }
 
+  get matrix() {
+    const TypedArrayClass = this.#matrixConstructor;
+    return new TypedArrayClass(this.#matrix);
+  }
+
   sum(destination, matrix) {
     const matrixValid = Matrix.validForSum(this, matrix);
     const destValid = Matrix.validForSum(this, destination);
