@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Minnimalistic math library",
   "scripts": {
-    "test": "npm run lint",
+    "test": "node --test && npm run lint",
     "lint": "eslint src/. && prettier --check \"**/*.js\" \"**/*.json\" \"**/.*rc\"",
     "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/.*rc\""
   },
