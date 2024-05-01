@@ -10,7 +10,7 @@ for (const fnName of functions) {
     ImmutableVector[fnName] = (...args) => {
       const vector = ImmutableVector.fromVertex(args[0]);
       return Vector[fnName](vector, ...args);
-    }
+    };
     continue;
   }
   ImmutableVector.prototype[fnName] = function (...args) {

@@ -142,7 +142,7 @@ class Vector {
     if (vectors.length === 0) {
       throw new Error('The function crossProduct must accept vectors');
     }
-    const firstVector = vectors[0]; 
+    const firstVector = vectors[0];
     const { size } = firstVector;
     const matrix = Matrix.fromSize(size, size, firstVector.#vectorConstructor);
     for (let i = 0; i < size - 1; i++) {

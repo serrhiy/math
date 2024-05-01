@@ -38,7 +38,7 @@ class Matrix {
   static fromNestedArray(matrix, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
     const plain = matrix.flat(Infinity);
     const rows = matrix.length;
-    const cols = matrix[0].length;
+    const cols = matrix[0]?.length ?? 0;
     const MatrixClass = this;
     return MatrixClass.fromArray(plain, rows, cols, TypedArrayClass);
   }

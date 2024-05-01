@@ -58,8 +58,8 @@ test('fromArray factory', async (t) => {
     const matrix = Matrix.fromArray([], size, size, TypedArrayClass);
     const { matrix: typedArray, rows, cols } = matrix;
     assert.deepEqual(actual, typedArray);
-    assert.equal(0, rows);
-    assert.equal(0, cols);
+    assert.equal(size, rows);
+    assert.equal(size, cols);
   });
 
   await t.test('1x1 matrix', () => {
@@ -101,5 +101,40 @@ test('fromArray factory', async (t) => {
     const cols = 2;
     const array = [1, 2, 3];
     assert.throws(() => Matrix.fromArray(array, rows, cols));
+  });
+});
+
+test('fromNestedArray factory', async (t) => {
+  await t.test('empty matrix', () => {
+    const actual = new TypedArrayClass();
+    const matrix = Matrix.fromNestedArray([], TypedArrayClass);
+    const { matrix: typedArray, rows, cols } = matrix;
+    assert.deepEqual(actual, typedArray);
+    assert.equal(0, rows);
+    assert.equal(0, cols);
+  });
+
+  await t.test('1x1 matrix', () => {
+    const array = [[1]];
+    const actual = new TypedArrayClass(array.flat(Infinity));
+    const matrix = Matrix.fromNestedArray(array, TypedArrayClass);
+    const { matrix: typedArray, rows, cols } = matrix;
+    assert.deepEqual(actual, typedArray);
+    assert.equal(1, rows);
+    assert.equal(1, cols);
+  });
+
+  await t.test('100x50 matrix', () => {
+    const rows = 100;
+    const cols = 50;
+    const array = Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, Math.random),
+    );
+    const actual = new TypedArrayClass(array.flat(Infinity));
+    const matrix = Matrix.fromNestedArray(array, TypedArrayClass);
+    const { matrix: typedArray, rows: r, cols: c } = matrix;
+    assert.deepEqual(actual, typedArray);
+    assert.equal(rows, r);
+    assert.equal(cols, c);
   });
 });
