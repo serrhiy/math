@@ -110,18 +110,16 @@ class Matrix {
     return new TypedArrayClass(this.#matrix);
   }
 
-  sum(destination, matrix) {
-    const matrixValid = Matrix.validForSum(this, matrix);
-    const destValid = Matrix.validForSum(this, destination);
-    if (!matrixValid || !destValid) {
+  static sum(destination, matrix1, matrix2) {
+    if (!Matrix.validForSum(matrix1, matrix2)) {
       throw new Error(
         'Invalid matrix for sum! ' +
           'The dimensions of the matrices are not identical!',
       );
     }
-    const thisMatrix = this.#matrix;
-    const otherMatrix = matrix.#matrix;
-    const map = Matrix.prototype.map.bind(this);
+    const thisMatrix = matrix1.#matrix;
+    const otherMatrix = matrix2.#matrix;
+    const map = Matrix.prototype.map.bind(matrix1);
     return map(destination, (n, i) => thisMatrix[i] + otherMatrix[i]);
   }
 
