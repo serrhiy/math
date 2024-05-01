@@ -195,7 +195,7 @@ class Matrix {
   pow(destination, n) {
     const { cols, rows } = this;
     if (cols !== rows) {
-      throw new Error("It's impossible to exponentiate a non-square matrix!");
+      throw new Error(`It's impossible to exponentiate a non-square matrix!`);
     }
     if (n === 0) {
       return Matrix.identity(rows);
@@ -295,13 +295,13 @@ class Matrix {
     const { rows, cols } = this;
     if (rows !== cols) {
       throw new Error(
-        "It's impossible to calculate " +
+        `It's impossible to calculate ` +
           'the determinant of a non-square matrix!',
       );
     }
     if (rows === 0 && cols === 0) {
       throw new Error(
-        "It's impossible to find the determinant of an empty matrix!",
+        `It's impossible to find the determinant of an empty matrix!`,
       );
     }
     const [upperTriangle, swaps] = this.toUpperTriangle();
