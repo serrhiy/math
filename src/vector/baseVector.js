@@ -77,15 +77,15 @@ class Vector {
     return map(destination, (n) => x * n);
   }
 
-  sum(destination, vector) {
-    const otherVector = vector.#vector;
-    const map = Vector.prototype.map.bind(this);
+  static sum(destination, vector1, vector2) {
+    const otherVector = vector2.#vector;
+    const map = Vector.prototype.map.bind(vector1);
     return map(destination, (n, i) => n + otherVector[i]);
   }
 
-  subtract(destination, vector) {
-    const otherVector = vector.#vector;
-    const map = Vector.prototype.map.bind(this);
+  static subtract(destination, vector1, vector2) {
+    const otherVector = vector2.#vector;
+    const map = Vector.prototype.map.bind(vector1);
     return map(destination, (n, i) => n - otherVector[i]);
   }
 
@@ -117,12 +117,11 @@ class Vector {
     return true;
   }
 
-  mixedProduct(...vectors) {
-    const { size, VectorConstructor } = this;
-    if (vectors.length + 1 !== size) {
+  static mixedProduct(...vectors) {
+    const { size, VectorConstructor } = vectors[0];
+    if (vectors.length !== size) {
       throw new Error('Invalid vectors to find mixed product');
     }
-    vectors.push(this);
     const matrix = Matrix.fromSize(size, size, VectorConstructor);
     for (let i = 0; i < size; i++) {
       const vector = vectors[i].#vector;
@@ -139,23 +138,23 @@ class Vector {
     );
   }
 
-  crossProduct(destination, ...vectors) {
+  static crossProduct(destination, ...vectors) {
     if (vectors.length === 0) {
       throw new Error('The function crossProduct must accept vectors');
     }
-    vectors.unshift(this);
-    const { length } = this.#vector;
-    const matrix = Matrix.fromSize(length, length, this.#vectorConstructor);
-    for (let i = 0; i < length - 1; i++) {
+    const firstVector = vectors[0]; 
+    const { size } = firstVector;
+    const matrix = Matrix.fromSize(size, size, firstVector.#vectorConstructor);
+    for (let i = 0; i < size - 1; i++) {
       const vector = vectors[i].#vector;
-      for (let j = 0; j < length; j++) {
+      for (let j = 0; j < size; j++) {
         matrix.set(i, j, vector[j]);
       }
     }
     const destVector = destination.#vector;
     const adjugated = matrix.adjugate();
-    for (let i = 0; i < length; i++) {
-      destVector[i] = adjugated.get(i, length - 1);
+    for (let i = 0; i < size; i++) {
+      destVector[i] = adjugated.get(i, size - 1);
     }
     return destination;
   }
