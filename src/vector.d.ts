@@ -13,14 +13,14 @@ declare class ImmutableVector {
   length(): number;
   dotProduct(vector: ImmutableVector): ImmutableVector;
   mulOnNumber(x: number): ImmutableVector;
-  sum(vector: ImmutableVector): ImmutableVector;
-  subtract(vector: ImmutableVector): ImmutableVector;
+  static sum(vector1: ImmutableVector, vector2: ImmutableVector): ImmutableVector;
+  static subtract(vector1: ImmutableVector, vector2: ImmutableVector): ImmutableVector;
   normalize(): ImmutableVector;
   isOrthogonalTo(vector: ImmutableVector): boolean;
   isParallelTo(vector: ImmutableVector): boolean;
-  mixedProduct(...vectors: ImmutableVector[]): number;
+  static mixedProduct(...vectors: ImmutableVector[]): number;
   angleBetweenVectors(vector: ImmutableVector): number;
-  crossProduct(...vectors: ImmutableVector[]): ImmutableVector;
+  static crossProduct(...vectors: ImmutableVector[]): ImmutableVector;
   map(fn: (element: number, index: number, vector: ImmutableVector) => number, thisArg: object): ImmutableVector;
 }
 
@@ -36,14 +36,14 @@ declare class MutableVector {
   length(): number;
   dotProduct(vector: MutableVector): MutableVector;
   mulOnNumber(x: number): MutableVector;
-  sum(vector: MutableVector): MutableVector;
-  subtract(vector: MutableVector): MutableVector;
+  static sum(vector1: MutableVector, vector2: MutableVector): MutableVector;
+  static subtract(vector1: MutableVector, vector2: MutableVector): MutableVector;
   normalize(): MutableVector;
   isOrthogonalTo(vector: MutableVector): boolean;
   isParallelTo(vector: MutableVector): boolean;
-  mixedProduct(...vectors: MutableVector[]): number;
+  static mixedProduct(...vectors: MutableVector[]): number;
   angleBetweenVectors(vector: MutableVector): number;
-  crossProduct(...vectors: MutableVector[]): MutableVector;
+  static crossProduct(...vectors: MutableVector[]): MutableVector;
   map(fn: (element: number, index: number, vector: MutableVector) => number, thisArg: object): MutableVector;
 }
 
