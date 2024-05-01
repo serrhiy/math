@@ -138,3 +138,44 @@ test('fromNestedArray factory', async (t) => {
     assert.equal(cols, c);
   });
 });
+
+test('fromSize factory', async (t) => {
+  await t.test('empty matrix', () => {
+    const size = 0;
+    const actual = new TypedArrayClass();
+    const matrix = Matrix.fromSize(size, size, TypedArrayClass);
+    const { matrix: typedArray, rows, cols } = matrix;
+    assert.deepEqual(actual, typedArray);
+    assert.equal(size, rows);
+    assert.equal(size, cols);
+  });
+
+  await t.test('50x100 matrix', () => {
+    const rows = 50;
+    const cols = 100;
+    const actual = new TypedArrayClass(rows * cols);
+    const matrix = Matrix.fromSize(rows, cols, TypedArrayClass);
+    const { matrix: typedArray, rows: r, cols: c } = matrix;
+    assert.deepEqual(actual, typedArray);
+    assert.equal(rows, r);
+    assert.equal(cols, c);
+  });
+
+  await t.test('invalid arguments', async (t) => {
+    await t.test('dimension is not a number', () => {
+      const rows = '10';
+      const cols = 5;
+      assert.throws(() => Matrix.fromSize(rows, cols, TypedArrayClass));
+    });
+    await t.test('negative dimension', () => {
+      const rows = 5;
+      const cols = -10;
+      assert.throws(() => Matrix.fromSize(rows, cols, TypedArrayClass));
+    });
+    await t.test('invalid dimension', () => {
+      const rows = 0;
+      const cols = 10;
+      assert.throws(() => Matrix.fromSize(rows, cols, TypedArrayClass));
+    });
+  });
+});
