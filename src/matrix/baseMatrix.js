@@ -123,18 +123,16 @@ class Matrix {
     return map(destination, (n, i) => thisMatrix[i] + otherMatrix[i]);
   }
 
-  subtract(destination, matrix) {
-    const matrixValid = Matrix.validForSum(this, matrix);
-    const destValid = Matrix.validForSum(this, destination);
-    if (!matrixValid || !destValid) {
+  static subtract(destination, matrix1, matrix2) {
+    if (!Matrix.validForSum(matrix1, matrix2)) {
       throw new Error(
         'Invalid matrix for subtract! ' +
           'The dimensions of the matrices are not identical!',
       );
     }
-    const thisMatrix = this.#matrix;
-    const otherMatrix = matrix.#matrix;
-    const map = Matrix.prototype.map.bind(this);
+    const thisMatrix = matrix1.#matrix;
+    const otherMatrix = matrix2.#matrix;
+    const map = Matrix.prototype.map.bind(matrix1);
     return map(destination, (n, i) => thisMatrix[i] - otherMatrix[i]);
   }
 
@@ -143,15 +141,15 @@ class Matrix {
     return map(destination, (n) => n * x);
   }
 
-  mul(destination, matrix) {
-    if (this.cols !== matrix.rows) {
+  static mul(destination, matrix1, matrix2) {
+    if (matrix1.cols !== matrix2.rows) {
       throw new Error('Invalid matrix for multiplying');
     }
-    const { cols: thisCols, rows: thisRows } = this;
-    const { cols: otherCols } = matrix;
+    const { cols: thisCols, rows: thisRows } = matrix1;
+    const { cols: otherCols } = matrix2;
 
-    const thisMatrix = this.#matrix;
-    const otherMatrix = matrix.#matrix;
+    const thisMatrix = matrix1.#matrix;
+    const otherMatrix = matrix2.#matrix;
     const destMatrix = destination.#matrix;
     let c = 0;
     let t = 0;
@@ -210,15 +208,15 @@ class Matrix {
     return n > 0 ? destination : inverse(destination);
   }
 
-  compose(destination, matrix) {
-    if (this.cols !== matrix.rows) {
+  static compose(destination, matrix1, matrix2) {
+    if (matrix1.cols !== matrix2.rows) {
       throw new Error('Invalid matrix for multiplying!');
     }
-    const { cols: thisCols, rows: thisRows } = this;
-    const { cols: otherCols } = matrix;
+    const { cols: thisCols, rows: thisRows } = matrix1;
+    const { cols: otherCols } = matrix2;
     const destMatrix = destination.#matrix;
-    const thisMatrix = this.#matrix;
-    const otherMatrix = matrix.#matrix;
+    const thisMatrix = matrix1.#matrix;
+    const otherMatrix = matrix2.#matrix;
     let c = 0;
     let t = 0;
     for (let i = 0; i < thisRows; i++) {
