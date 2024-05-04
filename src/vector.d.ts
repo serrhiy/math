@@ -35,7 +35,7 @@ declare class MutableVector {
   get VectorConstructor(): TypedArray;
   length(): number;
   dotProduct(vector: MutableVector): MutableVector;
-  mulOnNumber(x: number): MutableVector;
+  mulByNumber(x: number): MutableVector;
   static sum(vector1: MutableVector, vector2: MutableVector): MutableVector;
   static subtract(vector1: MutableVector, vector2: MutableVector): MutableVector;
   normalize(): MutableVector;
@@ -47,9 +47,17 @@ declare class MutableVector {
   map(fn: (element: number, index: number, vector: MutableVector) => number, thisArg: object): MutableVector;
 }
 
+declare class Vector4 {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+}
+
 export {
   ImmutableVector,
   MutableVector,
   ImmutableVector as immutable,
   MutableVector as mutable,
+  Vector4
 }
