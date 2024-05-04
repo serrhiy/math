@@ -1,5 +1,7 @@
 'use strict';
 
+const Vector4 = require('../vector/vector4.js');
+
 const TypedArrayClass = Float32Array;
 
 const SIZE = 4;
@@ -88,7 +90,7 @@ class Matrix4x4 {
     const y = mat[4] * vx + mat[5] * vy + mat[6] * vz + mat[7] * vw;
     const z = mat[8] * vx + mat[9] * vy + mat[10] * vz + mat[11] * vw;
     const w = mat[12] * vx + mat[13] * vy + mat[14] * vz + mat[15] * vw;
-    return { x, y, z, w };
+    return new Vector4(x, y, z, w);
   }
 }
 
