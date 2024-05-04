@@ -43,6 +43,15 @@ class Matrix4x4 {
     matrix[15] = 1.0;
     return new Matrix4x4(matrix);
   }
+
+  static scale(vector, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
+    const matrix = new TypedArrayClass(SIZE * SIZE);
+    matrix[0] = vector.x;
+    matrix[5] = vector.y;
+    matrix[10] = vector.z;
+    matrix[15] = 1.0;
+    return new Matrix4x4(matrix);
+  }
 }
 
 module.exports = Matrix4x4;
