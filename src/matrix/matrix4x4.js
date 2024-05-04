@@ -1,6 +1,6 @@
 'use strict';
 
-const DEFAULT_CONSTRUCTOR = Float32Array;
+const TypedArrayClass = Float32Array;
 
 const SIZE = 4;
 
@@ -11,7 +11,7 @@ class Matrix4x4 {
     this.#matrix = typed;
   }
 
-  static translate(vector, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
+  static translate(vector) {
     const matrix = new TypedArrayClass(SIZE * SIZE);
     matrix[0] = matrix[5] = matrix[10] = matrix[15] = 1;
     matrix[3] = vector.x;
@@ -20,7 +20,7 @@ class Matrix4x4 {
     return new Matrix4x4(matrix);
   }
 
-  static rotate(angle, vector, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
+  static rotate(angle, vector) {
     const sina = Math.sin(angle);
     const cosa = Math.cos(angle);
     const { x, y, z } = vector;
@@ -44,7 +44,7 @@ class Matrix4x4 {
     return new Matrix4x4(matrix);
   }
 
-  static scale(vector, TypedArrayClass = DEFAULT_CONSTRUCTOR) {
+  static scale(vector) {
     const matrix = new TypedArrayClass(SIZE * SIZE);
     matrix[0] = vector.x;
     matrix[5] = vector.y;
