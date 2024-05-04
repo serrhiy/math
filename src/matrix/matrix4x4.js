@@ -55,7 +55,7 @@ class Matrix4x4 {
     return new Matrix4x4(matrix);
   }
 
-  mulMatrix(matrix) {
+  mulByMatrix(matrix) {
     const a = this.#matrix;
     const b = matrix.#matrix;
     const result = new TypedArrayClass(SIZE * SIZE);
@@ -83,7 +83,7 @@ class Matrix4x4 {
     return new Matrix4x4(result);
   }
 
-  mulVector(vector) {
+  mulByVector(vector) {
     const mat = this.#matrix;
     const { x: vx, y: vy, z: vz, w: vw } = vector;
     const x = mat[0] * vx + mat[1] * vy + mat[2] * vz + mat[3] * vw;

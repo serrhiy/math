@@ -1,5 +1,6 @@
 
 import { TypedArray } from './types';
+import { ImmutableVector, MutableVector, Vector4 } from './vector';
 
 declare class ImmutableMatrix {
   static identity(size: number, TypedArrayClass: TypedArray): ImmutableMatrix;
@@ -17,9 +18,9 @@ declare class ImmutableMatrix {
   get matrixConstructor(): TypedArray;
   static sum(matrix1: ImmutableMatrix, matrix2: ImmutableMatrix): ImmutableMatrix;
   static subtract(matrix1: ImmutableMatrix, matrix2: ImmutableMatrix): ImmutableMatrix;
-  mulOnNumber(x: number): ImmutableMatrix;
+  mulByNumber(x: number): ImmutableMatrix;
   static mul(matrix1: ImmutableMatrix, matrix2: ImmutableMatrix): ImmutableMatrix;
-  mulOnVector(vector: any): ImmutableMatrix;
+  mulByVector(vector: ImmutableVector | MutableVector): ImmutableMatrix;
   pow(n: number): ImmutableMatrix;
   static compose(matrix1: ImmutableMatrix, matrix2: ImmutableMatrix): ImmutableMatrix;
   booleanProjecion(): ImmutableMatrix;
@@ -49,9 +50,9 @@ declare class MutableMatrix {
   get matrixConstructor(): TypedArray;
   static sum(matrix1: MutableMatrix, matrix2: MutableMatrix): MutableMatrix;
   static subtract(matrix1: MutableMatrix, matrix2: MutableMatrix): MutableMatrix;
-  mulOnNumber(x: number): MutableMatrix;
+  mulByNumber(x: number): MutableMatrix;
   static mul(matrix1: MutableMatrix, matrix2: MutableMatrix): MutableMatrix;
-  mulOnVector(vector: any): MutableMatrix;
+  mulByVector(vector: ImmutableVector | MutableVector): MutableMatrix;
   pow(n: number): MutableMatrix;
   static compose(matrix1: MutableMatrix, matrix2: MutableMatrix): MutableMatrix;
   booleanProjecion(): MutableMatrix;
@@ -65,9 +66,18 @@ declare class MutableMatrix {
   map(fn: (element: number, index: number, matrix: MutableMatrix) => number, thisArg: object): MutableMatrix;
 }
 
+declare class Matrix4x4 {
+  static translate(vector: Vector4): Matrix4x4;
+  static rotate(angle: number, vector: Vector4): Matrix4x4;
+  static scale(vector: Vector4): Matrix4x4;
+  mulByMatrix(matrix: Matrix4x4): Matrix4x4;
+  mulByVector(vector: Vector4): Vector4;
+}
+
 export {
   ImmutableMatrix,
   MutableMatrix,
   ImmutableMatrix as immutable,
   MutableMatrix as mutable,
+  Matrix4x4,
 };

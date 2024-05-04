@@ -72,7 +72,7 @@ class Vector {
     return thisVector.reduce((acc, n, i) => acc + n * otherVector[i], 0);
   }
 
-  mulOnNumber(destination, x) {
+  mulByNumber(destination, x) {
     const map = Vector.prototype.map.bind(this);
     return map(destination, (n) => x * n);
   }
@@ -174,7 +174,7 @@ class Vector {
 module.exports = {
   Vector,
   functions: [
-    'mulOnNumber',
+    'mulByNumber',
     'sum',
     'subtract',
     'normalize',

@@ -136,12 +136,12 @@ class Matrix {
     return map(destination, (n, i) => thisMatrix[i] - otherMatrix[i]);
   }
 
-  mulOnNumber(destination, x) {
+  mulByNumber(destination, x) {
     const map = Matrix.prototype.map.bind(this);
     return map(destination, (n) => n * x);
   }
 
-  static mul(destination, matrix1, matrix2) {
+  static mulByMatrix(destination, matrix1, matrix2) {
     if (matrix1.cols !== matrix2.rows) {
       throw new Error('Invalid matrix for multiplying');
     }
@@ -167,7 +167,7 @@ class Matrix {
     return destination;
   }
 
-  mulOnVector(vector) {
+  mulByVector(vector) {
     const { cols, rows } = this;
     if (cols !== vector.size) {
       throw new Error(
@@ -445,14 +445,14 @@ module.exports = {
   immutable: [
     'sum',
     'subtract',
-    'mulOnNumber',
+    'mulByNumber',
     'booleanProjecion',
     'tranpose',
     'map',
   ],
   specials: [
     [
-      'mul',
+      'mulByMatrix',
       (m1, ...args) => {
         const { constructor: TypedArrayClass } = Object.getPrototypeOf(m1);
         return TypedArrayClass.fromSize(
